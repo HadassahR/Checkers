@@ -10,11 +10,16 @@ using System.Windows.Forms;
 
 namespace Checkers
 {
-    public partial class Form1 : Form
+    public partial class Checkers : Form
     {
-        public Form1()
+        public Checkers()
         {
             InitializeComponent();
+        }
+
+        private void Checkers_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
