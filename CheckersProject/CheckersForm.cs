@@ -9,7 +9,8 @@ namespace CheckersProject
     {
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CheckersForm));
         Button[,] button;
-        Board gameBoard;
+        Board board;
+        Game game; 
         const int BOARD_SIZE = 8;
         public CheckersForm()
         {
@@ -18,7 +19,7 @@ namespace CheckersProject
 
         private void CheckerForm_Load(object sender, EventArgs e)
         {
-            button = new Button[8, 8] {
+            button = new Button[BOARD_SIZE, BOARD_SIZE] {
                 { square1 , square2, square3, square4, square5, square6, square7, square8       },
                 { square9, square10, square11, square12, square13, square14, square15, square16 },
                 { square17, square18, square19, square20, square21, square22, square23, square24},
@@ -28,7 +29,8 @@ namespace CheckersProject
                 { square49, square50, square51, square52, square53, square54, square55, square56},
                 { square57, square58, square59, square60, square61, square62, square63, square64}
             };
-            gameBoard = new Board(button);
+            board = new Board(button);
+            game = new Game();
         }
         private void BtnStart_Click(object sender, EventArgs e)
         {
@@ -38,6 +40,7 @@ namespace CheckersProject
             level.Visible = false;
             var startBtn = (Button)sender;
             startBtn.Visible = false;
+            score.Visible = true; 
         }
         private void InitializeNoneCheckers()
         {
@@ -61,18 +64,18 @@ namespace CheckersProject
             {
                 InitializeTop(Properties.Resources.checkerGray, "white");
                 InitializeBottom(Properties.Resources.checkerWhite, "gray");
-                gameBoard.SetStartingPlayer(Player.MIN);
+                game.SetStartingPlayer(Player.MIN);
             }
             else if (radioComputer.Checked)
             {
                 InitializeTop(Properties.Resources.checkerWhite, "gray");
                 InitializeBottom(Properties.Resources.checkerGray, "white");
-                gameBoard.SetStartingPlayer(Player.MAX);
+                game.SetStartingPlayer(Player.MAX);
             }
         }
         private void InitializeTop(Bitmap checker, string color)
         {
-            gameBoard.SetComputerColor(color); 
+            game.SetComputerColor(color); 
             int lastColumn = 2;
             int boardSize = 8;
             for (int col = 0; col <= lastColumn; col++)
@@ -89,7 +92,7 @@ namespace CheckersProject
         }
         private void InitializeBottom(Bitmap checker, string color)
         {
-            gameBoard.SetHumanColor(color); 
+            game.SetHumanColor(color); 
             int startingColumn = 5;
 
             for (int col = startingColumn; col < BOARD_SIZE; col++)
@@ -104,12 +107,11 @@ namespace CheckersProject
                 }
             }
         }
-
         private void SquareOnClick(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
-            bool pieceOfCurrentPlayer = gameBoard.GetCurrentPlayer().Equals(Player.MAX) && gameBoard.GetComputerColor().ToString().Equals(btn.Tag.ToString()) ? true
-                : gameBoard.GetCurrentPlayer().Equals(Player.MIN) && gameBoard.GetHumanColor().ToString().Equals(btn.Tag.ToString()) ? true : false;
+            bool pieceOfCurrentPlayer = game.GetCurrentPlayer().Equals(Player.MAX) && game.GetComputerColor().ToString().Equals(btn.Tag.ToString()) ? true
+                : game.GetCurrentPlayer().Equals(Player.MIN) && game.GetHumanColor().ToString().Equals(btn.Tag.ToString()) ? true : false;
 
             if (!btn.Tag.Equals("none") && pieceOfCurrentPlayer) // Must belong to current player
             {
@@ -120,15 +122,41 @@ namespace CheckersProject
                         if (button[r, c].Name == btn.Name)
                         {
                             btn.BackColor = Color.Cyan;
-                            chooseDestination.Visible = true; // remember to switch to false. Cancel option
-                            cancel.Visible = true; 
+                            chooseDestination.Visible = true; // remember to switch to false in cancel and once move is done
+                            cancel.Visible = true;
+                            game.SetPieceClicked(btn); 
                         }
                     }
                 }
 
             }
         }
-
+        private void DestinationCheckerOnClick()
+        {
+            throw new NotImplementedException();
+        }
+        private void MoveChecker()
+        {
+            throw new NotImplementedException();
+            // Get location of origin checker
+            // Get location of destination square
+            // Set image and tag of origin to none
+            // Set location and tag of destination to new one
+            // Update score in GUI
+            // Switch to next player
+            game.NextPlayersTurn();
+            UpdateScore(); // figure out how to update
+        }
+        private void UpdateScore()
+        {
+            computerScore.Text = game.GetComputerScore();
+            youScore.Text = game.GetHumanScore(); 
+        }
+        private void ValidateMove()
+        {
+            throw new NotImplementedException(); 
+            // calls a method in board? 
+        }
         private void Cancel_Click(object sender, EventArgs e)
         {
             for (var r = 0; r < BOARD_SIZE; r++)
@@ -137,14 +165,13 @@ namespace CheckersProject
                 {
                     if (button[r, c].BackColor == Color.Cyan) 
                     {
-                        button[r,c].BackColor = Color.Black;
+                        button[r,c].BackColor = Color.Red;
                         chooseDestination.Visible = false; // remember to switch to false. Cancel option
                         cancel.Visible = false;
+                        game.ResetClickedPiece(); 
                     }
                 }
             }
         }
-
-        // Should just do that after player's move, his pieces get disabled. 
     }
 }

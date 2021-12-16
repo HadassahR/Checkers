@@ -95,16 +95,24 @@ namespace CheckersProject
             this.square49 = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
             this.level = new System.Windows.Forms.GroupBox();
-            this.lvlEasy = new System.Windows.Forms.RadioButton();
-            this.lvlMedium = new System.Windows.Forms.RadioButton();
             this.lvlHard = new System.Windows.Forms.RadioButton();
+            this.lvlMedium = new System.Windows.Forms.RadioButton();
+            this.lvlEasy = new System.Windows.Forms.RadioButton();
             this.startingPlayer = new System.Windows.Forms.GroupBox();
             this.radioComputer = new System.Windows.Forms.RadioButton();
             this.radioYou = new System.Windows.Forms.RadioButton();
             this.chooseDestination = new System.Windows.Forms.Label();
             this.cancel = new System.Windows.Forms.Button();
+            this.move = new System.Windows.Forms.Button();
+            this.score = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.splitter1 = new System.Windows.Forms.Splitter();
+            this.computerScore = new System.Windows.Forms.Label();
+            this.youScore = new System.Windows.Forms.Label();
             this.level.SuspendLayout();
             this.startingPlayer.SuspendLayout();
+            this.score.SuspendLayout();
             this.SuspendLayout();
             // 
             // square1
@@ -770,16 +778,16 @@ namespace CheckersProject
             this.level.TabStop = false;
             this.level.Text = "Choose Difficulty";
             // 
-            // lvlEasy
+            // lvlHard
             // 
-            this.lvlEasy.AutoSize = true;
-            this.lvlEasy.Location = new System.Drawing.Point(20, 22);
-            this.lvlEasy.Name = "lvlEasy";
-            this.lvlEasy.Size = new System.Drawing.Size(60, 21);
-            this.lvlEasy.TabIndex = 0;
-            this.lvlEasy.TabStop = true;
-            this.lvlEasy.Text = "Easy";
-            this.lvlEasy.UseVisualStyleBackColor = true;
+            this.lvlHard.AutoSize = true;
+            this.lvlHard.Location = new System.Drawing.Point(20, 76);
+            this.lvlHard.Name = "lvlHard";
+            this.lvlHard.Size = new System.Drawing.Size(60, 21);
+            this.lvlHard.TabIndex = 2;
+            this.lvlHard.TabStop = true;
+            this.lvlHard.Text = "Hard";
+            this.lvlHard.UseVisualStyleBackColor = true;
             // 
             // lvlMedium
             // 
@@ -792,16 +800,16 @@ namespace CheckersProject
             this.lvlMedium.Text = "Medium";
             this.lvlMedium.UseVisualStyleBackColor = true;
             // 
-            // lvlHard
+            // lvlEasy
             // 
-            this.lvlHard.AutoSize = true;
-            this.lvlHard.Location = new System.Drawing.Point(20, 76);
-            this.lvlHard.Name = "lvlHard";
-            this.lvlHard.Size = new System.Drawing.Size(60, 21);
-            this.lvlHard.TabIndex = 2;
-            this.lvlHard.TabStop = true;
-            this.lvlHard.Text = "Hard";
-            this.lvlHard.UseVisualStyleBackColor = true;
+            this.lvlEasy.AutoSize = true;
+            this.lvlEasy.Location = new System.Drawing.Point(20, 22);
+            this.lvlEasy.Name = "lvlEasy";
+            this.lvlEasy.Size = new System.Drawing.Size(60, 21);
+            this.lvlEasy.TabIndex = 0;
+            this.lvlEasy.TabStop = true;
+            this.lvlEasy.Text = "Easy";
+            this.lvlEasy.UseVisualStyleBackColor = true;
             // 
             // startingPlayer
             // 
@@ -850,20 +858,99 @@ namespace CheckersProject
             // 
             // cancel
             // 
-            this.cancel.Location = new System.Drawing.Point(668, 56);
+            this.cancel.Location = new System.Drawing.Point(739, 56);
             this.cancel.Name = "cancel";
-            this.cancel.Size = new System.Drawing.Size(180, 45);
+            this.cancel.Size = new System.Drawing.Size(141, 45);
             this.cancel.TabIndex = 68;
             this.cancel.Text = "CANCEL MOVE";
             this.cancel.UseVisualStyleBackColor = true;
             this.cancel.Visible = false;
             this.cancel.Click += new System.EventHandler(this.Cancel_Click);
             // 
+            // move
+            // 
+            this.move.Location = new System.Drawing.Point(651, 56);
+            this.move.Name = "move";
+            this.move.Size = new System.Drawing.Size(82, 45);
+            this.move.TabIndex = 69;
+            this.move.Text = "MOVE";
+            this.move.UseVisualStyleBackColor = true;
+            this.move.Visible = false;
+            // 
+            // score
+            // 
+            this.score.Controls.Add(this.youScore);
+            this.score.Controls.Add(this.computerScore);
+            this.score.Controls.Add(this.label2);
+            this.score.Controls.Add(this.label1);
+            this.score.Controls.Add(this.splitter1);
+            this.score.Location = new System.Drawing.Point(676, 395);
+            this.score.Name = "score";
+            this.score.Size = new System.Drawing.Size(238, 108);
+            this.score.TabIndex = 70;
+            this.score.TabStop = false;
+            this.score.Text = "Score";
+            this.score.Visible = false;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Alef", 10F);
+            this.label1.ForeColor = System.Drawing.Color.DarkGreen;
+            this.label1.Location = new System.Drawing.Point(16, 25);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(86, 23);
+            this.label1.TabIndex = 71;
+            this.label1.Text = "Computer";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Alef", 10F);
+            this.label2.ForeColor = System.Drawing.Color.DarkGreen;
+            this.label2.Location = new System.Drawing.Point(163, 25);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(41, 23);
+            this.label2.TabIndex = 72;
+            this.label2.Text = "You";
+            // 
+            // splitter1
+            // 
+            this.splitter1.Location = new System.Drawing.Point(3, 18);
+            this.splitter1.Name = "splitter1";
+            this.splitter1.Size = new System.Drawing.Size(121, 87);
+            this.splitter1.TabIndex = 73;
+            this.splitter1.TabStop = false;
+            // 
+            // computerScore
+            // 
+            this.computerScore.AutoSize = true;
+            this.computerScore.Font = new System.Drawing.Font("Alef", 16F);
+            this.computerScore.ForeColor = System.Drawing.Color.DeepPink;
+            this.computerScore.Location = new System.Drawing.Point(47, 57);
+            this.computerScore.Name = "computerScore";
+            this.computerScore.Size = new System.Drawing.Size(33, 37);
+            this.computerScore.TabIndex = 74;
+            this.computerScore.Text = "0";
+            // 
+            // youScore
+            // 
+            this.youScore.AutoSize = true;
+            this.youScore.Font = new System.Drawing.Font("Alef", 16F);
+            this.youScore.ForeColor = System.Drawing.Color.DeepPink;
+            this.youScore.Location = new System.Drawing.Point(167, 57);
+            this.youScore.Name = "youScore";
+            this.youScore.Size = new System.Drawing.Size(33, 37);
+            this.youScore.TabIndex = 75;
+            this.youScore.Text = "0";
+            // 
             // CheckersForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(903, 682);
+            this.ClientSize = new System.Drawing.Size(992, 682);
+            this.Controls.Add(this.score);
+            this.Controls.Add(this.move);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.chooseDestination);
             this.Controls.Add(this.startingPlayer);
@@ -940,6 +1027,8 @@ namespace CheckersProject
             this.level.PerformLayout();
             this.startingPlayer.ResumeLayout(false);
             this.startingPlayer.PerformLayout();
+            this.score.ResumeLayout(false);
+            this.score.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1021,6 +1110,13 @@ namespace CheckersProject
         private System.Windows.Forms.RadioButton radioYou;
         private System.Windows.Forms.Label chooseDestination;
         private System.Windows.Forms.Button cancel;
+        private System.Windows.Forms.Button move;
+        private System.Windows.Forms.GroupBox score;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Splitter splitter1;
+        private System.Windows.Forms.Label youScore;
+        private System.Windows.Forms.Label computerScore;
     }
 }
 

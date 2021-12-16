@@ -8,10 +8,7 @@ namespace CheckersGame
     public class Board // Leah // 
     {
         Button[,] button;
-        private Player startingPlayer;
-        private Player currentPlayer;
-        private String computerColor;
-        private String humanColor;
+        
         public static readonly int SIZE = 8;
         public static readonly String topColor;
 
@@ -19,39 +16,6 @@ namespace CheckersGame
         public Board(Button[,] button)
         {
             this.button = button;
-        }
-
-        public void SetStartingPlayer(Player player)
-        {
-            startingPlayer = player;
-            currentPlayer = startingPlayer;
-        }
-        public Player GetStartingPlayer()
-        {
-            return startingPlayer;
-        }
-        public void NextPlayersTurn()
-        {
-            currentPlayer = currentPlayer == Player.MAX ? Player.MIN : Player.MAX;
-        }
-        public Player GetCurrentPlayer()
-        {
-            return currentPlayer;
-        }
-        public String GetHumanColor()
-        {
-            return this.humanColor; 
-        }
-        public void SetHumanColor(String tag) {
-            this.humanColor = tag; 
-        }
-        public String GetComputerColor()
-        {
-            return this.computerColor; 
-        }
-        public void SetComputerColor (String tag)
-        {
-            this.computerColor = tag; 
         }
 
         /*
