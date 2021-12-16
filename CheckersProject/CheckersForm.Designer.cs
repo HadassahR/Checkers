@@ -101,6 +101,8 @@ namespace CheckersProject
             this.startingPlayer = new System.Windows.Forms.GroupBox();
             this.radioComputer = new System.Windows.Forms.RadioButton();
             this.radioYou = new System.Windows.Forms.RadioButton();
+            this.chooseDestination = new System.Windows.Forms.Label();
+            this.cancel = new System.Windows.Forms.Button();
             this.level.SuspendLayout();
             this.startingPlayer.SuspendLayout();
             this.SuspendLayout();
@@ -748,7 +750,7 @@ namespace CheckersProject
             // 
             // btnStart
             // 
-            this.btnStart.Location = new System.Drawing.Point(671, 262);
+            this.btnStart.Location = new System.Drawing.Point(668, 326);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(200, 46);
             this.btnStart.TabIndex = 64;
@@ -761,7 +763,7 @@ namespace CheckersProject
             this.level.Controls.Add(this.lvlHard);
             this.level.Controls.Add(this.lvlMedium);
             this.level.Controls.Add(this.lvlEasy);
-            this.level.Location = new System.Drawing.Point(671, 65);
+            this.level.Location = new System.Drawing.Point(668, 129);
             this.level.Name = "level";
             this.level.Size = new System.Drawing.Size(200, 106);
             this.level.TabIndex = 65;
@@ -805,7 +807,7 @@ namespace CheckersProject
             // 
             this.startingPlayer.Controls.Add(this.radioComputer);
             this.startingPlayer.Controls.Add(this.radioYou);
-            this.startingPlayer.Location = new System.Drawing.Point(671, 177);
+            this.startingPlayer.Location = new System.Drawing.Point(668, 241);
             this.startingPlayer.Name = "startingPlayer";
             this.startingPlayer.Size = new System.Drawing.Size(200, 79);
             this.startingPlayer.TabIndex = 66;
@@ -834,11 +836,36 @@ namespace CheckersProject
             this.radioYou.Text = "You";
             this.radioYou.UseVisualStyleBackColor = true;
             // 
+            // chooseDestination
+            // 
+            this.chooseDestination.AutoSize = true;
+            this.chooseDestination.Font = new System.Drawing.Font("Alef", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chooseDestination.ForeColor = System.Drawing.Color.DarkGreen;
+            this.chooseDestination.Location = new System.Drawing.Point(646, 26);
+            this.chooseDestination.Name = "chooseDestination";
+            this.chooseDestination.Size = new System.Drawing.Size(234, 27);
+            this.chooseDestination.TabIndex = 67;
+            this.chooseDestination.Text = "Click Destination Square";
+            this.chooseDestination.Visible = false;
+            // 
+            // cancel
+            // 
+            this.cancel.Location = new System.Drawing.Point(668, 56);
+            this.cancel.Name = "cancel";
+            this.cancel.Size = new System.Drawing.Size(180, 45);
+            this.cancel.TabIndex = 68;
+            this.cancel.Text = "CANCEL MOVE";
+            this.cancel.UseVisualStyleBackColor = true;
+            this.cancel.Visible = false;
+            this.cancel.Click += new System.EventHandler(this.Cancel_Click);
+            // 
             // CheckersForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(903, 682);
+            this.Controls.Add(this.cancel);
+            this.Controls.Add(this.chooseDestination);
             this.Controls.Add(this.startingPlayer);
             this.Controls.Add(this.level);
             this.Controls.Add(this.btnStart);
@@ -914,6 +941,7 @@ namespace CheckersProject
             this.startingPlayer.ResumeLayout(false);
             this.startingPlayer.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -991,6 +1019,8 @@ namespace CheckersProject
         private System.Windows.Forms.GroupBox startingPlayer;
         private System.Windows.Forms.RadioButton radioComputer;
         private System.Windows.Forms.RadioButton radioYou;
+        private System.Windows.Forms.Label chooseDestination;
+        private System.Windows.Forms.Button cancel;
     }
 }
 

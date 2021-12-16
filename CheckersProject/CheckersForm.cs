@@ -45,12 +45,14 @@ namespace CheckersProject
             {
                 btn.BackgroundImage = Properties.Resources.checkerNone;
                 btn.Tag = "none";
-                btn.BackgroundImageLayout = ImageLayout.Stretch; 
+                btn.BackgroundImageLayout = ImageLayout.Stretch;
                 if (btn.BackColor == Color.Black)
                 {
-                    btn.Enabled = false; 
+                    btn.Enabled = false;
+                } else
+                {
+                    btn.Click += new EventHandler(SquareOnClick);
                 }
-                //btn.Text = "none!"; 
             }
         }
         private void InitializeBoard()
@@ -59,17 +61,18 @@ namespace CheckersProject
             {
                 InitializeTop(Properties.Resources.checkerGray, "white");
                 InitializeBottom(Properties.Resources.checkerWhite, "gray");
-                gameBoard.setStartingPlayer(Player.MIN);
+                gameBoard.SetStartingPlayer(Player.MIN);
             }
             else if (radioComputer.Checked)
             {
                 InitializeTop(Properties.Resources.checkerWhite, "gray");
                 InitializeBottom(Properties.Resources.checkerGray, "white");
-                gameBoard.setStartingPlayer(Player.MAX);
+                gameBoard.SetStartingPlayer(Player.MAX);
             }
         }
         private void InitializeTop(Bitmap checker, string color)
         {
+            gameBoard.SetComputerColor(color); 
             int lastColumn = 2;
             int boardSize = 8;
             for (int col = 0; col <= lastColumn; col++)
@@ -80,14 +83,13 @@ namespace CheckersProject
                     {
                         button[col, row].BackgroundImage = checker;
                         button[col, row].Tag = color;
-                        button[col, row].Text = button[col, row].Tag.ToString(); 
                     }
                 }
             }
         }
         private void InitializeBottom(Bitmap checker, string color)
         {
-
+            gameBoard.SetHumanColor(color); 
             int startingColumn = 5;
 
             for (int col = startingColumn; col < BOARD_SIZE; col++)
@@ -98,10 +100,51 @@ namespace CheckersProject
                     {
                         button[col, row].BackgroundImage = checker;
                         button[col, row].Tag = color;
-                        button[col, row].Text = button[col, row].Tag.ToString();
                     }
                 }
             }
         }
+
+        private void SquareOnClick(object sender, EventArgs e)
+        {
+            Button btn = (Button)sender;
+            bool pieceOfCurrentPlayer = gameBoard.GetCurrentPlayer().Equals(Player.MAX) && gameBoard.GetComputerColor().ToString().Equals(btn.Tag.ToString()) ? true
+                : gameBoard.GetCurrentPlayer().Equals(Player.MIN) && gameBoard.GetHumanColor().ToString().Equals(btn.Tag.ToString()) ? true : false;
+
+            if (!btn.Tag.Equals("none") && pieceOfCurrentPlayer) // Must belong to current player
+            {
+                for (var r = 0; r < BOARD_SIZE; r++)
+                {
+                    for (var c = 0; c < BOARD_SIZE; c++)
+                    {
+                        if (button[r, c].Name == btn.Name)
+                        {
+                            btn.BackColor = Color.Cyan;
+                            chooseDestination.Visible = true; // remember to switch to false. Cancel option
+                            cancel.Visible = true; 
+                        }
+                    }
+                }
+
+            }
+        }
+
+        private void Cancel_Click(object sender, EventArgs e)
+        {
+            for (var r = 0; r < BOARD_SIZE; r++)
+            {
+                for (var c = 0; c < BOARD_SIZE; c++)
+                {
+                    if (button[r, c].BackColor == Color.Cyan) 
+                    {
+                        button[r,c].BackColor = Color.Black;
+                        chooseDestination.Visible = false; // remember to switch to false. Cancel option
+                        cancel.Visible = false;
+                    }
+                }
+            }
+        }
+
+        // Should just do that after player's move, his pieces get disabled. 
     }
 }
