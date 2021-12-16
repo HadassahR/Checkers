@@ -1,0 +1,10 @@
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\obj\Debug\CheckersProject.csproj.AssemblyReference.cache
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\obj\Debug\CheckersProject.Properties.Resources.resources
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\obj\Debug\CheckersProject.csproj.GenerateResource.cache
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\obj\Debug\CheckersProject.csproj.CoreCompileInputs.cache
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\bin\Debug\CheckersProject.exe.config
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\bin\Debug\CheckersProject.exe
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\bin\Debug\CheckersProject.pdb
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\obj\Debug\CheckersProject.CheckersForm.resources
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\obj\Debug\CheckersProject.exe
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\obj\Debug\CheckersProject.pdb
