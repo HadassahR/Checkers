@@ -8,8 +8,8 @@ namespace CheckersProject
 {
     class Location
     {
-        private int col;
-        private int row; 
+        public int col;
+        public int row; 
         public Location (int col, int row)
         {
             this.col = col;

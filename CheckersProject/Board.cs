@@ -5,17 +5,19 @@ using System.Windows.Forms;
 
 namespace CheckersGame
 {
+    // TO DO: PossibleCapture()
     public class Board // Leah // 
     {
-        Button[,] button;
+        Button[,] buttons;
         
         public static readonly int SIZE = 8;
         public static readonly String topColor;
+        private Game game; 
 
 
         public Board(Button[,] button)
         {
-            this.button = button;
+            this.buttons = button;
         }
 
         /*
@@ -29,7 +31,7 @@ namespace CheckersGame
             {
                 for (int row = 0; row < SIZE; row++)
                 {
-                    String squareStatus = button[col, row].Tag.ToString();
+                    String squareStatus = buttons[col, row].Tag.ToString();
                     if (squareStatus == "white")
                     {
                         whitePieces++;
@@ -43,223 +45,229 @@ namespace CheckersGame
             return whitePieces - grayPieces;
         }
 
+        public bool PossibleCapture ()
+        {
+            throw new NotImplementedException(); 
+            return true; 
+        }
+
         /*
          * returns a list of boards for every possible next move
          */
-        //public List<Board> getAllMoves(Player player) // ****
-        //{
-        //    List<Board> allMoves = new List<Board>();
-        //    String playerColor = (player == Player.MIN) ? "gray" : "white";
-        //    String otherColor = (playerColor == "gray") ? "white" : "gray";
-        //    for (int col = 0; col < SIZE; col++)
-        //    {
-        //        for (int row = 0; row < SIZE; row++)
-        //        {
-        //            String piece = getPiece(button[col, row]);
-        //            /** if (!piece || piece == otherColor) //check that there is a piece there that is this color
-        //            {
-        //                continue;
-        //            }
-        //            else
-        //            {
-        //                Location square = new Location(col, row);
-        //                List<Board> theseMoves = MovesforThisPiece(square, otherColor);
-        //                allMoves.Add(theseMoves); //might need to make sure not null
+        public List<Board> GetAllMoves (Player player) // ****
+        {
+            List<Board> allmoves = new List<Board>();
+            string playercolor = (player == Player.MIN) ? "gray" : "white";
+            string othercolor = (playercolor == "gray") ? "white" : "gray";
+            for (int col = 0; col < SIZE; col++)
+            {
+                for (int row = 0; row < SIZE; row++)
+                {
+                    string piece = GetPiece(buttons[col, row]);
+                    /** if (!piece || piece == othercolor) //check that there is a piece there that is this color
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        location square = new location(col, row);
+                        list<board> thesemoves = movesforthispiece(square, othercolor);
+                        allmoves.add(thesemoves); //might need to make sure not null
 
-        //            } Need Leah to explain **/
-        //        }
-        //    }
-        //    return allMoves;
-        //}
+                    } need leah to explain **/
+                }
+            }
+            return allmoves;
+        }
 
-         /*
-         * generate a list of all possible moves for this piece
-         */
-        //public List<Board> MovesForThisPiece(Location square, String otherColor)
-        //{
-        //    List<Board> theseMoves = new List<Board>();
-        //    //check if king, when uncomment, make the next if an else if
-        //    //String piece = board[square.col, square.row];
-        //    //if (piece == "king")
-        //    //{
-        //    //    theseMoves.Add(checkAbove);
-        //    //    theseMoves.Add(checkBelow);
-        //    //}
-        //    if (playerColor == topColor) //moving down
-        //    {
-        //        theseMoves.Add(checkBelow(square, otherColor));
-        //    }
-        //    else //moving up
-        //    {
-        //        theseMoves.Add(checkAbove(square, otherColor));
-        //    }
-        //    return theseMoves; 
-        //}
+        /*
+        * generate a list of all possible moves for this piece
+        */
+        public List<Board> movesforthispiece(Location location, string othercolor)
+        {
+            List<Board> thesemoves = new List<Board>();
+            //check if king, when uncomment, make the next if an else if
+            //string piece = board[square.col, square.row];
+            //if (piece == "king")
+            //{
+            //    thesemoves.add(checkabove);
+            //    thesemoves.add(checkbelow);
+            //}
+            if (playercolor == topcolor) //moving down
+            {
+                thesemoves.add(checkbelow(square, othercolor));
+            }
+            else //moving up
+            {
+                thesemoves.add(checkabove(square, othercolor));
+            }
+            return thesemoves;
+        }
 
         /*
          * check if moves are possible above and returns the boards of possible moves 
          */
-        //public List<Board> CheckAbove (Location square, playerColor, otherColor)
-        //{
-        //    List<Board> moves = new List<Board>();
-        //    int col = square.col;
-        //    int row = square.row;
-        //    if (!(col == 0)) //not first row
-        //    {
-        //        bool firstRow = false;
-        //        bool lastRow = false;
-        //        if (row == 0)
-        //        {
-        //            firstRow = true;
-        //        }
-        //        if (row = SIZE - 1)
-        //        {
-        //            lastRow = true;
-        //        }
-        //        String left = firstRow ? null : getPiece(board[col - 1, row - 1]);
-        //        String right = lastRow ? null : getPiece(board[col - 1, row + 1]);
-        //        if (!firstRow) //check left side
-        //        {
-        //            if (!left)
-        //            {
-        //                Location moveTo = new Location(col - 1, row - 1);
-        //                moves.Add(MakeMove(square, moveTo, playerColor));
-        //            }
-        //            else
-        //            {
-        //                if (col - 2 > 0 && row - 2 > 0)
-        //                {
-        //                    Location middle = new Location(col - 1, row - 1);
-        //                    Location end = new Location(col - 2, row - 2);
-        //                    Board jumpedBoard = makeJump(square, middle, end, playerColor);
-        //                    if (jumpedBoard)
-        //                    {
-        //                        moves.Add(jumpedBoard);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        if (!lastRow) //check right side
-        //        {
-        //            if (!right)
-        //            {
-        //                Location moveTo = new Location(col - 1, row + 1);
-        //                moves.Add(MakeMove(square, moveTo, playerColor))
-        //            }
-        //            else
-        //            {
-        //                if (col - 2 > 0 && row + 2 < SIZE)
-        //                {
-        //                    Location middle = new Location(col - 1, row + 1);
-        //                    Location end = new Location(col - 2, row + 2);
-        //                    Board jumpedBoard = makeJump(square, middle, end, playerColor);
-        //                    if (jumpedBoard)
-        //                    {
-        //                        moves.Add(jumpedBoard)
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //    return moves;
-        //}
+        public List<Board> checkabove(Location location, playercolor, othercolor)
+        {
+            list<board> moves = new list<board>();
+            int col = location.col;
+            int row = location.row;
+            if (!(col == 0)) //not first row
+            {
+                bool firstrow = false;
+                bool lastrow = false;
+                if (row == 0)
+                {
+                    firstrow = true;
+                }
+                if (row = size - 1)
+                {
+                    lastrow = true;
+                }
+                string left = firstrow ? null : getpiece(board[col - 1, row - 1]);
+                string right = lastrow ? null : getpiece(board[col - 1, row + 1]);
+                if (!firstrow) //check left side
+                {
+                    if (!left)
+                    {
+                        location moveto = new location(col - 1, row - 1);
+                        moves.add(makemove(location, moveto, playercolor));
+                    }
+                    else
+                    {
+                        if (col - 2 > 0 && row - 2 > 0)
+                        {
+                            location middle = new location(col - 1, row - 1);
+                            location end = new location(col - 2, row - 2);
+                            board jumpedboard = makejump(location, middle, end, playercolor);
+                            if (jumpedboard)
+                            {
+                                moves.add(jumpedboard);
+                            }
+                        }
+                    }
+                }
+                if (!lastrow) //check right side
+                {
+                    if (!right)
+                    {
+                        location moveto = new location(col - 1, row + 1);
+                        moves.add(makemove(location, moveto, playercolor))
+                    }
+                    else
+                    {
+                        if (col - 2 > 0 && row + 2 < size)
+                        {
+                            location middle = new location(col - 1, row + 1);
+                            location end = new location(col - 2, row + 2);
+                            board jumpedboard = makejump(location, middle, end, playercolor);
+                            if (jumpedboard)
+                            {
+                                moves.add(jumpedboard)
+                            }
+                        }
+                    }
+                }
+            }
+            return moves;
+        }
 
         /*
        * check if moves are possible below and returns the boards of possible moves 
        */
-        //public List<Board> checkBelow(col, row, otherColor)
-        //{
-        //    List<Board> moves = new List<Board>();
-        //    int col = square.col;
-        //    int row = square.row;
-        //    if (!(col == SIZE)) //not last row
-        //    {
-        //        bool firstRow = false;
-        //        bool lastRow = false;
-        //        if (row == 0)
-        //        {
-        //            firstRow = true;
-        //        }
-        //        if (row = SIZE - 1)
-        //        {
-        //            lastRow = true;
-        //        }
-        //        String left = firstRow ? null : getPiece(board[col + 1, row - 1]);
-        //        String right = lastRow ? null : getPiece(board[col + 1, row + 1]);
-        //        if (!firstRow) //check left side
-        //        {
-        //            if (!left)
-        //            {
-        //                Location moveTo = new Location(col + 1, row - 1);
-        //                moves.Add(MakeMove(square, moveTo, playerColor));
-        //            }
-        //            else
-        //            {
-        //                if (col + 2 > 0 && row - 2 > 0)
-        //                {
-        //                    Location middle = new Location(col + 1, row - 1);
-        //                    Location end = new Location(col + 2, row - 2);
-        //                    Board jumpedBoard = makeJump(square, middle, end, playerColor);
-        //                    if (jumpedBoard)
-        //                    {
-        //                        moves.Add(jumpedBoard);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        if (!lastRow) //check right side
-        //        {
-        //            if (!right)
-        //            {
-        //                Location moveTo = new Location(col + 1, row + 1);
-        //                moves.Add(MakeMove(square, moveTo, playerColor))
-        //            }
-        //            else
-        //            {
-        //                if (col - 2 > 0 && row + 2 < SIZE)
-        //                {
-        //                    Location middle = new Location(col + 1, row + 1);
-        //                    Location end = new Location(col + 2, row + 2);
-        //                    Board jumpedBoard = makeJump(square, middle, end, playerColor);
-        //                    if (jumpedBoard)
-        //                    {
-        //                        moves.Add(jumpedBoard);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //    return moves;
-        //}
+        public List<Board> CheckBelow(Location location, string otherColor)
+        {
+            List<Board> moves = new List<Board>();
+            int col = location.col;
+            int row = location.row;
+            if (!(col == SIZE)) //not last row
+            {
+                bool firstrow = false;
+                bool lastrow = false;
+                if (row == 0)
+                {
+                    firstrow = true;
+                }
+                if (row = SIZE - 1)
+                {
+                    lastrow = true;
+                }
+                string left = firstrow ? null : GetPiece(board[col + 1, row - 1]);
+                string right = lastrow ? null : GetPiece(board[col + 1, row + 1]);
+                if (!firstrow) //check left side
+                {
+                    if (!left)
+                    {
+                        location moveto = new location(col + 1, row - 1);
+                        moves.add(makemove(location, moveto, playercolor));
+                    }
+                    else
+                    {
+                        if (col + 2 > 0 && row - 2 > 0)
+                        {
+                            location middle = new location(col + 1, row - 1);
+                            location end = new location(col + 2, row - 2);
+                            board jumpedboard = makejump(location, middle, end, playercolor);
+                            if (jumpedboard)
+                            {
+                                moves.add(jumpedboard);
+                            }
+                        }
+                    }
+                }
+                if (!lastrow) //check right side
+                {
+                    if (!right)
+                    {
+                        location moveto = new location(col + 1, row + 1);
+                        moves.add(makemove(location, moveto, playercolor))
+                    }
+                    else
+                    {
+                        if (col - 2 > 0 && row + 2 < size)
+                        {
+                            location middle = new location(col + 1, row + 1);
+                            location end = new location(col + 2, row + 2);
+                            board jumpedboard = makejump(location, middle, end, playercolor);
+                            if (jumpedboard)
+                            {
+                                moves.add(jumpedboard);
+                            }
+                        }
+                    }
+                }
+            }
+            return moves;
+        }
 
         /* 
         * returns a copy of the board with the new move
         */
-        //public Board MakeMove(Location starting, Location ending, String color)
-        //{
-        //    Board movedBoard = this.copy();
-        //    movedBoard[col, row].Tag = "none";
-        //    movedBoard[destCol, destRow].Tag = color;
-        //    return movedBoard;
-        //}
+        public board makemove(location starting, location ending, string color)
+        {
+            board movedboard = this.copy();
+            movedboard[col, row].tag = "none";
+            movedboard[destcol, destrow].tag = color;
+            return movedboard;
+        }
 
         /*
-       * Checks if a jump is possible and returns a copy of the board with the new move if it is
+       * checks if a jump is possible and returns a copy of the board with the new move if it is
        */
-        //public Board makeJump(Location starting, Location middle, Location end, String color)
-        //{
-        //    Board jumpedBoard = null;
-        //    String middleColor = getPiece(board[middle.col, middle.ro]));
-        //    String endPiece = getPiece(board[end.col, end.row]);
-        //    if ((middle != color) && (!endPiece)) //checks that a jump is possible
-        //    {
-        //        jumpedBoard = this.copy;
-        //        jumpedBoard[starting.col, starting.row].Tag = "none";
-        //        jumpedBoard[middle.col, middle.row].Tag = "none";
-        //        jumpedBoard[end.col, end.row].Tag = color;
-        //    }
-        //    return jumpedBoard;
-        //}
+        public Board MakeJump(Location starting, Location middle, Location end, string color)
+        {
+            Board jumpedboard = null;
+            string middlecolor = GetPiece(Board[middle.col, middle.row]));
+            string endpiece = getpiece(board[end.col, end.row]);
+            if ((middle != color) && (!endpiece)) //checks that a jump is possible
+            {
+                jumpedboard = this.copy;
+                jumpedboard[starting.col, starting.row].tag = "none";
+                jumpedboard[middle.col, middle.row].tag = "none";
+                jumpedboard[end.col, end.row].tag = color;
+            }
+            return jumpedboard;
+        }
 
         /*
         * TODO
@@ -273,7 +281,7 @@ namespace CheckersGame
         /*
         * returns the color of the square and null if empty
         */
-        public String getPiece(Button square)
+        public String GetPiece(Button square)
         {
             String piece = square.Tag.ToString();
             if (piece == "none")
@@ -281,6 +289,50 @@ namespace CheckersGame
                 piece = null;
             }
             return piece;
+        }
+
+        public bool IsLegal (Location origin, Location destination, Player player)
+        {
+            if (buttons[origin.row, origin.col].Tag.Equals("none") ||! buttons[destination.row, destination.col].Tag.Equals("none"))
+            {
+                return false; 
+            } 
+            if (player.Equals(Player.MIN)) // player is human
+            {
+                if (destination.row == origin.row + 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)) // regular move
+                {
+                    return true; 
+                } 
+                else if (destination.row == origin.row + 2 && destination.col == origin.col + 2 && buttons[origin.row + 1, origin.col + 1].Text.Equals((game.GetComputerColor()))) // single capture - right (Hadassah - figure out tags)
+                {
+                    return true; 
+                } 
+                else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 && buttons[origin.row + 1, origin.col - 1].Text.Equals((game.GetComputerColor()))) // single capture - left
+                {
+                    return true; 
+                }
+            }
+            if (player.Equals(Player.MAX)) // player is computer
+            {
+                if (destination.row == origin.row - 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1))
+                {
+                    return true;
+                }
+                else if (destination.row == origin.row - 2 && destination.col == origin.col + 2 && buttons[origin.row - 1, origin.col + 1].Text.Equals((game.GetHumanColor()))) // single capture - right (Hadassah - figure out tags)
+                {
+                    return true;
+                }
+                else if (destination.row == origin.row - 2 && destination.col == origin.col - 2 && buttons[origin.row - 1, origin.col - 1].Text.Equals((game.GetHumanColor()))) // single capture - left
+                {
+                    return true;
+                }
+            }
+        }
+
+        public bool AnotherCapture()
+        {
+            // This will check if there as opponents piece to the right or left. If its legal (with current origina and new destnation, 
+            // it will see if its an option to move and will move. If it is legal, another jump is ture. If not, its false. If true, second jump will be taken
         }
       
     }

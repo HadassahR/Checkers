@@ -29,8 +29,9 @@ namespace CheckersProject
                 { square49, square50, square51, square52, square53, square54, square55, square56},
                 { square57, square58, square59, square60, square61, square62, square63, square64}
             };
-            board = new Board(button);
             game = new Game();
+            board = new Board(button);
+
         }
         private void BtnStart_Click(object sender, EventArgs e)
         {
@@ -146,6 +147,7 @@ namespace CheckersProject
             // Switch to next player
             game.NextPlayersTurn();
             UpdateScore(); // figure out how to update
+            game.ResetClickedPiece(); 
         }
         private void UpdateScore()
         {
