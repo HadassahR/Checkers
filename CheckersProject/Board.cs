@@ -334,6 +334,32 @@ namespace CheckersGame
             // This will check if there as opponents piece to the right or left. If its legal (with current origina and new destnation, 
             // it will see if its an option to move and will move. If it is legal, another jump is ture. If not, its false. If true, second jump will be taken
         }
-      
+
+        /*
+        * If either player has no more peices on the board, this returns true
+        * TODO: store the number of white and gray pieces in the class, call this in alpha beta
+        */
+        public bool gameOver()
+        {
+            int whitePieces = 0;
+            int grayPieces = 0;
+            for (int col = 0; col < SIZE; col++)
+            {
+                for (int row = 0; row < SIZE; row++)
+                {
+                    String squareStatus = buttons[col, row].Tag.ToString();
+                    if (squareStatus == "white")
+                    {
+                        whitePieces++;
+                    }
+                    else if (squareStatus == "gray")
+                    {
+                        grayPieces++;
+                    }
+                }
+            }
+            return whitePieces == 0 || grayPieces == 0;
+        }
+
     }
 }
