@@ -12,12 +12,50 @@ namespace CheckersGame
         
         public static readonly int SIZE = 8;
         public static readonly String topColor;
-        private Game game; 
-
+        private Game game;
+        private int whitePieces;
+        private int grayPieces;
 
         public Board(Button[,] button)
         {
             this.buttons = button;
+            this.whitePieces = countPieces("white");
+            this.grayPieces = countPieces("gray");
+        }
+
+        /*
+         * This is called from the constructor and sets the pieces values for the class
+         */
+        private int countPieces(String color)
+        {
+            int pieces = 0;
+            for (int col = 0; col < SIZE; col++)
+            {
+                for (int row = 0; row < SIZE; row++)
+                {
+                    String squareStatus = buttons[col, row].Tag.ToString();
+                    if (squareStatus == color)
+                    {
+                        pieces++;
+                    }                    
+                }
+            }
+            return pieces;
+        }
+
+        /*
+         * Function is called to decrement the total number of pieces for a color when a piece is captured
+         */
+        private void decrementPieces(String capturingColor)
+        {
+            if (capturingColor.Equals("white"))
+            {
+                this.grayPieces--;
+            }
+            else
+            {
+                this.whitePieces--;
+            }
         }
 
         /*
@@ -25,24 +63,7 @@ namespace CheckersGame
          */
         public double HeuristicValue()
         {
-            int whitePieces = 0;
-            int grayPieces = 0;
-            for (int col = 0; col < SIZE; col++)
-            {
-                for (int row = 0; row < SIZE; row++)
-                {
-                    String squareStatus = buttons[col, row].Tag.ToString();
-                    if (squareStatus == "white")
-                    {
-                        whitePieces++;
-                    }
-                    else if (squareStatus == "gray")
-                    {
-                        grayPieces++;
-                    }
-                }
-            }
-            return whitePieces - grayPieces;
+            return this.whitePieces - this.grayPieces;
         }
 
         public bool PossibleCapture ()
@@ -253,6 +274,7 @@ namespace CheckersGame
 
         /*
        * checks if a jump is possible and returns a copy of the board with the new move if it is
+       * TODO: decrement the value for the piece that's been captured
        */
         public Board MakeJump(Location starting, Location middle, Location end, string color)
         {
@@ -265,6 +287,7 @@ namespace CheckersGame
                 jumpedboard[starting.col, starting.row].tag = "none";
                 jumpedboard[middle.col, middle.row].tag = "none";
                 jumpedboard[end.col, end.row].tag = color;
+                jumpedboard.decrementPieces(color);
             }
             return jumpedboard;
         }
@@ -341,24 +364,7 @@ namespace CheckersGame
         */
         public bool gameOver()
         {
-            int whitePieces = 0;
-            int grayPieces = 0;
-            for (int col = 0; col < SIZE; col++)
-            {
-                for (int row = 0; row < SIZE; row++)
-                {
-                    String squareStatus = buttons[col, row].Tag.ToString();
-                    if (squareStatus == "white")
-                    {
-                        whitePieces++;
-                    }
-                    else if (squareStatus == "gray")
-                    {
-                        grayPieces++;
-                    }
-                }
-            }
-            return whitePieces == 0 || grayPieces == 0;
+            return this.whitePieces == 0 || this.grayPieces == 0;
         }
 
     }
