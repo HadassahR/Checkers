@@ -113,7 +113,7 @@ namespace CheckersProject
             Button btn = (Button)sender;
             bool pieceOfCurrentPlayer = game.GetCurrentPlayer().Equals(Player.MAX) && game.GetComputerColor().ToString().Equals(btn.Tag.ToString()) ? true
                 : game.GetCurrentPlayer().Equals(Player.MIN) && game.GetHumanColor().ToString().Equals(btn.Tag.ToString()) ? true : false;
-
+            
             if (!btn.Tag.Equals("none") && pieceOfCurrentPlayer) // Must belong to current player
             {
                 for (var r = 0; r < BOARD_SIZE; r++)
@@ -136,28 +136,25 @@ namespace CheckersProject
         {
             throw new NotImplementedException();
         }
-        private void MoveChecker()
+        private void MoveChecker(Player player, Location origin, Location destination)
         {
-            throw new NotImplementedException();
-            // Get location of origin checker
-            // Get location of destination square
-            // Set image and tag of origin to none
-            // Set location and tag of destination to new one
-            // Update score in GUI
-            // Switch to next player
+            button[destination.row, destination.col].Tag = button[origin.row, origin.col].Tag.ToString();
+            button[origin.row, origin.col].Tag = "none"; 
+            if (player == Player.MIN)
+            {
+                game.IncreaseHumanScore(1); // clarify this
+            } else
+            {
+                game.IncreaseComputerScore(1); 
+            }
             game.NextPlayersTurn();
-            UpdateScore(); // figure out how to update
+            UpdateScoreDisplay(); 
             game.ResetClickedPiece(); 
         }
-        private void UpdateScore()
+        private void UpdateScoreDisplay()
         {
             computerScore.Text = game.GetComputerScore();
             youScore.Text = game.GetHumanScore(); 
-        }
-        private void ValidateMove()
-        {
-            throw new NotImplementedException(); 
-            // calls a method in board? 
         }
         private void Cancel_Click(object sender, EventArgs e)
         {
