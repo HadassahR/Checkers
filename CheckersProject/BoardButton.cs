@@ -9,5 +9,9 @@ namespace CheckersProject
         {
             location = loc; 
         }
+        public Location GetLocation ()
+        {
+            return this.location; 
+        }
     }
 }

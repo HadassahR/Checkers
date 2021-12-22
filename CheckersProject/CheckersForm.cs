@@ -180,8 +180,8 @@ namespace CheckersProject
                 buttons[destination.row, destination.col].BackgroundImage = gray ? Properties.Resources.checkerGray : Properties.Resources.checkerWhite;
             }
 
-            buttons[origin.row, origin.col].Tag = "none";
-            buttons[origin.row, origin.col].BackgroundImage = Properties.Resources.checkerNone; 
+            buttons[origin.row, origin.col].Tag = "none"; 
+            buttons[origin.row, origin.col].BackgroundImage = Properties.Resources.checkerNone;
             if (player == Player.MIN)
             {
                 game.IncreaseHumanScore(1); // clarify this
