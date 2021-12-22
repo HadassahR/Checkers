@@ -105,11 +105,11 @@ namespace CheckersProject
             this.cancel = new System.Windows.Forms.Button();
             this.move = new System.Windows.Forms.Button();
             this.score = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.splitter1 = new System.Windows.Forms.Splitter();
-            this.computerScore = new System.Windows.Forms.Label();
             this.youScore = new System.Windows.Forms.Label();
+            this.computerScore = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.splitter1 = new System.Windows.Forms.Splitter();
             this.level.SuspendLayout();
             this.startingPlayer.SuspendLayout();
             this.score.SuspendLayout();
@@ -876,6 +876,7 @@ namespace CheckersProject
             this.move.Text = "MOVE";
             this.move.UseVisualStyleBackColor = true;
             this.move.Visible = false;
+            this.move.Click += new System.EventHandler(this.MoveClick);
             // 
             // score
             // 
@@ -892,35 +893,16 @@ namespace CheckersProject
             this.score.Text = "Score";
             this.score.Visible = false;
             // 
-            // label1
+            // youScore
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Alef", 10F);
-            this.label1.ForeColor = System.Drawing.Color.DarkGreen;
-            this.label1.Location = new System.Drawing.Point(16, 25);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(86, 23);
-            this.label1.TabIndex = 71;
-            this.label1.Text = "Computer";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Alef", 10F);
-            this.label2.ForeColor = System.Drawing.Color.DarkGreen;
-            this.label2.Location = new System.Drawing.Point(163, 25);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(41, 23);
-            this.label2.TabIndex = 72;
-            this.label2.Text = "You";
-            // 
-            // splitter1
-            // 
-            this.splitter1.Location = new System.Drawing.Point(3, 18);
-            this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(121, 87);
-            this.splitter1.TabIndex = 73;
-            this.splitter1.TabStop = false;
+            this.youScore.AutoSize = true;
+            this.youScore.Font = new System.Drawing.Font("Alef", 16F);
+            this.youScore.ForeColor = System.Drawing.Color.DeepPink;
+            this.youScore.Location = new System.Drawing.Point(167, 57);
+            this.youScore.Name = "youScore";
+            this.youScore.Size = new System.Drawing.Size(33, 37);
+            this.youScore.TabIndex = 75;
+            this.youScore.Text = "0";
             // 
             // computerScore
             // 
@@ -933,16 +915,35 @@ namespace CheckersProject
             this.computerScore.TabIndex = 74;
             this.computerScore.Text = "0";
             // 
-            // youScore
+            // label2
             // 
-            this.youScore.AutoSize = true;
-            this.youScore.Font = new System.Drawing.Font("Alef", 16F);
-            this.youScore.ForeColor = System.Drawing.Color.DeepPink;
-            this.youScore.Location = new System.Drawing.Point(167, 57);
-            this.youScore.Name = "youScore";
-            this.youScore.Size = new System.Drawing.Size(33, 37);
-            this.youScore.TabIndex = 75;
-            this.youScore.Text = "0";
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Alef", 10F);
+            this.label2.ForeColor = System.Drawing.Color.DarkGreen;
+            this.label2.Location = new System.Drawing.Point(163, 25);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(41, 23);
+            this.label2.TabIndex = 72;
+            this.label2.Text = "You";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Alef", 10F);
+            this.label1.ForeColor = System.Drawing.Color.DarkGreen;
+            this.label1.Location = new System.Drawing.Point(16, 25);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(86, 23);
+            this.label1.TabIndex = 71;
+            this.label1.Text = "Computer";
+            // 
+            // splitter1
+            // 
+            this.splitter1.Location = new System.Drawing.Point(3, 18);
+            this.splitter1.Name = "splitter1";
+            this.splitter1.Size = new System.Drawing.Size(121, 87);
+            this.splitter1.TabIndex = 73;
+            this.splitter1.TabStop = false;
             // 
             // CheckersForm
             // 

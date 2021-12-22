@@ -110,11 +110,11 @@ namespace CheckersProject
         }
         private void SquareOnClick(object sender, EventArgs e)
         {
-            Button btn = (Button)sender;
+            Button btn = (Button) sender;
             bool pieceOfCurrentPlayer = game.GetCurrentPlayer().Equals(Player.MAX) && game.GetComputerColor().ToString().Equals(btn.Tag.ToString()) ? true
                 : game.GetCurrentPlayer().Equals(Player.MIN) && game.GetHumanColor().ToString().Equals(btn.Tag.ToString()) ? true : false;
             
-            if (!btn.Tag.Equals("none") && pieceOfCurrentPlayer) // Must belong to current player
+            if (!btn.Tag.Equals("none") && pieceOfCurrentPlayer && !game.OriginClicked()) // Must belong to current player
             {
                 for (var r = 0; r < BOARD_SIZE; r++)
                 {
@@ -125,16 +125,49 @@ namespace CheckersProject
                             btn.BackColor = Color.Cyan;
                             chooseDestination.Visible = true; // remember to switch to false in cancel and once move is done
                             cancel.Visible = true;
-                            game.SetPieceClicked(btn); 
+                            game.SetPieceClicked(btn);
+                            game.SetOriginClicked(true); 
                         }
                     }
                 }
-
+            } else if (btn.Tag.Equals("none") && !game.GetDestinationClicked())
+                for (var r = 0; r < BOARD_SIZE; r++)
+                {
+                    for (var c = 0; c < BOARD_SIZE; c++)
+                    {
+                        if (button[r, c].Name == btn.Name)
+                        {
+                            btn.BackColor = Color.Magenta;
+                            chooseDestination.Visible = false; // remember to switch to false in cancel and once move is done
+                            cancel.Visible = true;
+                            game.SetDestinationClicked(btn);
+                            game.SetDestinationClicked(true);
+                        }
+                    }
+                }
+            if (game.OriginClicked() && game.GetDestinationClicked())
+            {
+                move.Visible = true;
             }
         }
-        private void DestinationCheckerOnClick()
+        private void MoveClick(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            Location origin = null;
+            Location destination = null; 
+            for (var r = 0; r < BOARD_SIZE; r++)
+            {
+                for (var c = 0; c < BOARD_SIZE; c++)
+                {
+                    if (button[r, c] == game.GetClickedOrigin())
+                    {
+                        origin = new Location(r, c);
+                    } else if (button[r, c] == game.GetClickedDestination())
+                    {
+                        destination = new Location(r, c); 
+                    }
+                }
+            }
+            MoveChecker(game.GetCurrentPlayer(), origin, destination); 
         }
         private void MoveChecker(Player player, Location origin, Location destination)
         {
@@ -149,7 +182,11 @@ namespace CheckersProject
             }
             game.NextPlayersTurn();
             UpdateScoreDisplay(); 
-            game.ResetClickedPiece(); 
+            game.ResetClickedOrigin(); 
+            if (board.IsGameOver())
+            {
+                EndGame(); 
+            }
         }
         private void UpdateScoreDisplay()
         {
@@ -162,15 +199,22 @@ namespace CheckersProject
             {
                 for (var c = 0; c < BOARD_SIZE; c++)
                 {
-                    if (button[r, c].BackColor == Color.Cyan) 
+                    if (button[r, c].BackColor == Color.Cyan || button [r, c].BackColor == Color.Magenta) 
                     {
                         button[r,c].BackColor = Color.Red;
-                        chooseDestination.Visible = false; // remember to switch to false. Cancel option
+                        chooseDestination.Visible = false;
                         cancel.Visible = false;
-                        game.ResetClickedPiece(); 
+                        game.ResetClickedOrigin();
+                        game.SetOriginClicked(false);
+                        game.ResetDestinationClicked();
+                        game.SetDestinationClicked(false); 
                     }
                 }
             }
+        }
+        private void EndGame()
+        {
+            throw new NotImplementedException();
         }
     }
 }
