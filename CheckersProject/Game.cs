@@ -14,8 +14,8 @@ namespace CheckersProject
         private Player currentPlayer;
         private String computerColor;
         private String humanColor;
-        private Button clickedOrigin;
-        private Button clickedDestination; 
+        private Button originButton;
+        private Button destinationButton; 
         private bool originClicked;
         private bool destinationClicked; 
         private int computerScore; 
@@ -47,7 +47,7 @@ namespace CheckersProject
         {
             return this.humanColor;
         }
-        public void SetHumanColor(String tag)
+        public void SetHumanColor(string tag)
         {
             this.humanColor = tag;
         }
@@ -55,52 +55,35 @@ namespace CheckersProject
         {
             return this.computerColor;
         }
-        public void SetComputerColor(String tag)
+        public void SetComputerColor(string tag)
         {
             this.computerColor = tag;
         }
-        public void SetPieceClicked(Button button)
+        public Button GetOriginButton()
         {
-            // Need to check if this piece is legal to move
-            clickedOrigin = button; 
-            // When cancelled this needs to be reset
-        }
-        public Button GetClickedOrigin()
-        {
-            return this.clickedOrigin; 
+            return this.originButton; 
         }        
-        public Button GetClickedDestination()
-        {
-            return this.clickedDestination; 
-        }
-        public void ResetClickedOrigin ()
-        {
-            clickedOrigin = null; 
-        }
-        public bool OriginClicked ()
+        public bool IsOriginClicked ()
         {
             return this.originClicked; 
         }
-        public void SetOriginClicked(bool clicked)
+        public void SetOriginClicked(Button btn, bool clicked)
         {
+            this.originButton = btn; 
             this.originClicked = clicked; 
         }
-        public void SetDestinationClicked(Button btn)
+        public Button GetDestinationButton()
         {
-            this.clickedDestination = btn; 
+            return this.destinationButton;
         }
-        public void ResetDestinationClicked()
+        public bool IsDestinationClicked()
         {
-            this.clickedDestination = null;
+            return this.destinationClicked;
         }
-        public void SetDestinationClicked(bool clicked)
+        public void SetDestinationClicked(Button btn, bool clicked)
         {
+            this.destinationButton = btn;
             this.destinationClicked = clicked;
-        }
-
-        public bool GetDestinationClicked()
-        {
-            return this.destinationClicked; 
         }
         public void IncreaseComputerScore (int points)
         {
@@ -118,7 +101,6 @@ namespace CheckersProject
         {
             return this.humanScore.ToString(); 
         }
-
 
     }
 }

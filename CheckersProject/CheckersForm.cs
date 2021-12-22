@@ -8,7 +8,7 @@ namespace CheckersProject
     public partial class CheckersForm : Form
     {
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CheckersForm));
-        Button[,] button;
+        Button[,] buttons;
         Board board;
         Game game; 
         const int BOARD_SIZE = 8;
@@ -16,10 +16,9 @@ namespace CheckersProject
         {
             InitializeComponent();
         }
-
         private void CheckerForm_Load(object sender, EventArgs e)
         {
-            button = new Button[BOARD_SIZE, BOARD_SIZE] {
+            buttons = new Button[BOARD_SIZE, BOARD_SIZE] {
                 { square1 , square2, square3, square4, square5, square6, square7, square8       },
                 { square9, square10, square11, square12, square13, square14, square15, square16 },
                 { square17, square18, square19, square20, square21, square22, square23, square24},
@@ -29,9 +28,8 @@ namespace CheckersProject
                 { square49, square50, square51, square52, square53, square54, square55, square56},
                 { square57, square58, square59, square60, square61, square62, square63, square64}
             };
-            game = new Game();
-            board = new Board(button);
-
+            board = new Board(buttons);
+            game = new Game(); 
         }
         private void BtnStart_Click(object sender, EventArgs e)
         {
@@ -41,11 +39,11 @@ namespace CheckersProject
             level.Visible = false;
             var startBtn = (Button)sender;
             startBtn.Visible = false;
-            score.Visible = true; 
+            score.Visible = true;
         }
         private void InitializeNoneCheckers()
         {
-            foreach (var btn in button)
+            foreach (var btn in buttons)
             {
                 btn.BackgroundImage = Properties.Resources.checkerNone;
                 btn.Tag = "none";
@@ -63,15 +61,17 @@ namespace CheckersProject
         {
             if (radioYou.Checked)
             {
-                InitializeTop(Properties.Resources.checkerGray, "white");
-                InitializeBottom(Properties.Resources.checkerWhite, "gray");
+                InitializeTop(Properties.Resources.checkerGray, "White");
+                InitializeBottom(Properties.Resources.checkerWhite, "Gray");
                 game.SetStartingPlayer(Player.MIN);
+                UpdateTurn(Player.MIN); 
             }
             else if (radioComputer.Checked)
             {
-                InitializeTop(Properties.Resources.checkerWhite, "gray");
-                InitializeBottom(Properties.Resources.checkerGray, "white");
+                InitializeTop(Properties.Resources.checkerWhite, "Gray");
+                InitializeBottom(Properties.Resources.checkerGray, "White");
                 game.SetStartingPlayer(Player.MAX);
+                UpdateTurn(Player.MIN); 
             }
         }
         private void InitializeTop(Bitmap checker, string color)
@@ -85,8 +85,8 @@ namespace CheckersProject
                 {
                     if ((col + row) % 2 == 0)
                     {
-                        button[col, row].BackgroundImage = checker;
-                        button[col, row].Tag = color;
+                        buttons[col, row].BackgroundImage = checker;
+                        buttons[col, row].Tag = color;
                     }
                 }
             }
@@ -102,8 +102,8 @@ namespace CheckersProject
                 {
                     if ((col + row) % 2 == 0)
                     {
-                        button[col, row].BackgroundImage = checker;
-                        button[col, row].Tag = color;
+                        buttons[col, row].BackgroundImage = checker;
+                        buttons[col, row].Tag = color;
                     }
                 }
             }
@@ -114,38 +114,36 @@ namespace CheckersProject
             bool pieceOfCurrentPlayer = game.GetCurrentPlayer().Equals(Player.MAX) && game.GetComputerColor().ToString().Equals(btn.Tag.ToString()) ? true
                 : game.GetCurrentPlayer().Equals(Player.MIN) && game.GetHumanColor().ToString().Equals(btn.Tag.ToString()) ? true : false;
             
-            if (!btn.Tag.Equals("none") && pieceOfCurrentPlayer && !game.OriginClicked()) // Must belong to current player
+            if (!btn.Tag.Equals("none") && pieceOfCurrentPlayer && !game.IsOriginClicked()) // Must belong to current player
             {
                 for (var r = 0; r < BOARD_SIZE; r++)
                 {
                     for (var c = 0; c < BOARD_SIZE; c++)
                     {
-                        if (button[r, c].Name == btn.Name)
+                        if (buttons[r, c].Name == btn.Name)
                         {
                             btn.BackColor = Color.Cyan;
                             chooseDestination.Visible = true; // remember to switch to false in cancel and once move is done
                             cancel.Visible = true;
-                            game.SetPieceClicked(btn);
-                            game.SetOriginClicked(true); 
+                            game.SetOriginClicked(btn, true);
                         }
                     }
                 }
-            } else if (btn.Tag.Equals("none") && !game.GetDestinationClicked())
+            } else if (btn.Tag.Equals("none") && !game.IsDestinationClicked())
                 for (var r = 0; r < BOARD_SIZE; r++)
                 {
                     for (var c = 0; c < BOARD_SIZE; c++)
                     {
-                        if (button[r, c].Name == btn.Name)
+                        if (buttons[r, c].Name == btn.Name)
                         {
                             btn.BackColor = Color.Magenta;
                             chooseDestination.Visible = false; // remember to switch to false in cancel and once move is done
                             cancel.Visible = true;
-                            game.SetDestinationClicked(btn);
-                            game.SetDestinationClicked(true);
+                            game.SetDestinationClicked(btn, true);
                         }
                     }
                 }
-            if (game.OriginClicked() && game.GetDestinationClicked())
+            if (game.IsOriginClicked() && game.IsDestinationClicked())
             {
                 move.Visible = true;
             }
@@ -158,10 +156,10 @@ namespace CheckersProject
             {
                 for (var c = 0; c < BOARD_SIZE; c++)
                 {
-                    if (button[r, c] == game.GetClickedOrigin())
+                    if (buttons[r, c] == game.GetOriginButton())
                     {
                         origin = new Location(r, c);
-                    } else if (button[r, c] == game.GetClickedDestination())
+                    } else if (buttons[r, c] == game.GetDestinationButton())
                     {
                         destination = new Location(r, c); 
                     }
@@ -171,8 +169,19 @@ namespace CheckersProject
         }
         private void MoveChecker(Player player, Location origin, Location destination)
         {
-            button[destination.row, destination.col].Tag = button[origin.row, origin.col].Tag.ToString();
-            button[origin.row, origin.col].Tag = "none"; 
+            buttons[destination.row, destination.col].Tag = buttons[origin.row, origin.col].Tag.ToString();
+            if (player == Player.MIN)
+            {
+                bool gray = game.GetHumanColor().Equals("Gray"); 
+                buttons[destination.row, destination.col].BackgroundImage = gray ? Properties.Resources.checkerGray : Properties.Resources.checkerWhite;  
+            } else
+            {
+                bool gray = game.GetComputerColor().Equals("Gray");
+                buttons[destination.row, destination.col].BackgroundImage = gray ? Properties.Resources.checkerGray : Properties.Resources.checkerWhite;
+            }
+
+            buttons[origin.row, origin.col].Tag = "none";
+            buttons[origin.row, origin.col].BackgroundImage = Properties.Resources.checkerNone; 
             if (player == Player.MIN)
             {
                 game.IncreaseHumanScore(1); // clarify this
@@ -181,12 +190,17 @@ namespace CheckersProject
                 game.IncreaseComputerScore(1); 
             }
             game.NextPlayersTurn();
+            UpdateTurn(game.GetCurrentPlayer()); 
             UpdateScoreDisplay(); 
-            game.ResetClickedOrigin(); 
-            if (board.IsGameOver())
-            {
-                EndGame(); 
-            }
+            game.SetOriginClicked(null, false); 
+            game.SetDestinationClicked(null, false); 
+            //if (board.IsGameOver())
+            //{
+            //    EndGame(); 
+            //}
+            ResetColors();
+            cancel.Visible = false;
+            move.Visible = false; 
         }
         private void UpdateScoreDisplay()
         {
@@ -195,22 +209,28 @@ namespace CheckersProject
         }
         private void Cancel_Click(object sender, EventArgs e)
         {
+            ResetColors();
+            cancel.Visible = false; 
+        }
+        private void ResetColors()
+        {
             for (var r = 0; r < BOARD_SIZE; r++)
             {
                 for (var c = 0; c < BOARD_SIZE; c++)
                 {
-                    if (button[r, c].BackColor == Color.Cyan || button [r, c].BackColor == Color.Magenta) 
+                    if (buttons[r, c].BackColor == Color.Cyan || buttons[r, c].BackColor == Color.Magenta)
                     {
-                        button[r,c].BackColor = Color.Red;
+                        buttons[r, c].BackColor = Color.Red;
                         chooseDestination.Visible = false;
-                        cancel.Visible = false;
-                        game.ResetClickedOrigin();
-                        game.SetOriginClicked(false);
-                        game.ResetDestinationClicked();
-                        game.SetDestinationClicked(false); 
+                        game.SetOriginClicked(null, false);
+                        game.SetDestinationClicked(null, false);
                     }
                 }
             }
+        }
+        private void UpdateTurn(Player player)
+        {
+            currentTurn.Text = player == Player.MIN ? "Your turn!" : "Computer's Turn!"; 
         }
         private void EndGame()
         {
@@ -218,3 +238,6 @@ namespace CheckersProject
         }
     }
 }
+
+
+/// display players turn / computers turn 

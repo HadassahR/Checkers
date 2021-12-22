@@ -110,6 +110,8 @@ namespace CheckersProject
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.splitter1 = new System.Windows.Forms.Splitter();
+            this.turn = new System.Windows.Forms.Label();
+            this.currentTurn = new System.Windows.Forms.Label();
             this.level.SuspendLayout();
             this.startingPlayer.SuspendLayout();
             this.score.SuspendLayout();
@@ -945,11 +947,35 @@ namespace CheckersProject
             this.splitter1.TabIndex = 73;
             this.splitter1.TabStop = false;
             // 
+            // turn
+            // 
+            this.turn.AutoSize = true;
+            this.turn.Font = new System.Drawing.Font("Alef", 20F);
+            this.turn.ForeColor = System.Drawing.Color.DarkGreen;
+            this.turn.Location = new System.Drawing.Point(197, 614);
+            this.turn.Name = "turn";
+            this.turn.Size = new System.Drawing.Size(0, 46);
+            this.turn.TabIndex = 71;
+            this.turn.Visible = false;
+            // 
+            // currentTurn
+            // 
+            this.currentTurn.AutoSize = true;
+            this.currentTurn.Font = new System.Drawing.Font("Alef", 20F);
+            this.currentTurn.ForeColor = System.Drawing.Color.DarkGreen;
+            this.currentTurn.Location = new System.Drawing.Point(227, 614);
+            this.currentTurn.Name = "currentTurn";
+            this.currentTurn.Size = new System.Drawing.Size(246, 46);
+            this.currentTurn.TabIndex = 72;
+            this.currentTurn.Text = "Current Player";
+            // 
             // CheckersForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(992, 682);
+            this.Controls.Add(this.currentTurn);
+            this.Controls.Add(this.turn);
             this.Controls.Add(this.score);
             this.Controls.Add(this.move);
             this.Controls.Add(this.cancel);
@@ -1118,6 +1144,8 @@ namespace CheckersProject
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Label youScore;
         private System.Windows.Forms.Label computerScore;
+        private System.Windows.Forms.Label turn;
+        private System.Windows.Forms.Label currentTurn;
     }
 }
 
