@@ -238,6 +238,3 @@ namespace CheckersProject
         }
     }
 }
-
-
-/// display players turn / computers turn 

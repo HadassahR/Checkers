@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CheckersProject
 {
-    class Location
+    public class Location
     {
         public int col;
         public int row; 
