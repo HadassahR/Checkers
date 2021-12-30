@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace CheckersProject
 {
-    //MIN is gray, MAX is white
-    public enum Player
+    public enum Piece
     {
-        MAX, MIN
+        NULL, GRAY, WHITE, EMPTY, WHITE_KING, GRAY_KING
     }
 }
+
+    
+

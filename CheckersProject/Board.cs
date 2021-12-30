@@ -8,46 +8,50 @@ namespace CheckersGame
     // TO DO: PossibleCapture()
     public class Board // Leah // 
     {
-        Button[,] buttons;
-        
         public static readonly int SIZE = 8;
-        public static readonly String topColor;
-        private int whitePieces;
-        private int grayPieces;
+        Piece[,] squares = new Piece[SIZE, SIZE];
+        public static readonly Piece topColor; //TODO: this
+        private int whitePieces = 0;
+        private int grayPieces = 0;
         private Game game;
-        public Board(Button[,] button)
+
+        private Board()
         {
-            this.buttons = button;
-            this.whitePieces = countPieces("white");
-            this.grayPieces = countPieces("gray");
+            squares = new Piece[SIZE, SIZE];
         }
 
-        /*
-         * This is called from the constructor and sets the pieces values for the class
-         */
-        private int countPieces(String color)
+        public Board(Button[,] button)
         {
-            int pieces = 0;
-            for (int col = 0; col < SIZE; col++)
+            squares = new Piece[SIZE, SIZE];
+            for (int row = 0; row < SIZE; row++)
             {
-                for (int row = 0; row < SIZE; row++)
+                for (int col = 0; col < SIZE; col++)
                 {
-                    String squareStatus = buttons[col, row].Tag.ToString();
-                    if (squareStatus == color)
+                    String square = button[row, col].Tag.ToString();
+                    squares[row, col] = square.Equals("white") ? Piece.WHITE :
+                        square.Equals("whiteKing") ? Piece.WHITE_KING :
+                        square.Equals("gray") ? Piece.GRAY :
+                        square.Equals("grayKing") ? Piece.GRAY_KING : Piece.EMPTY;
+
+                    if (squares[row, col] == Piece.GRAY || squares[row, col] == Piece.GRAY_KING)
                     {
-                        pieces++;
+                        grayPieces++;
+                    }
+                    else if (squares[row, col] == Piece.WHITE || squares[row, col] == Piece.WHITE_KING)
+                    {
+                        whitePieces++;
                     }
                 }
             }
-            return pieces;
         }
 
         /*
          * Function is called to decrement the total number of pieces for a color when a piece is captured
+         * TODO: change to MAX and MIN
          */
-        private void decrementPieces(String capturingColor)
+        private void decrementPieces(Piece capturingPiece)
         {
-            if (capturingColor.Equals("white"))
+            if (IsWhite(capturingPiece))
             {
                 this.grayPieces--;
             }
@@ -73,28 +77,28 @@ namespace CheckersGame
 
         /*
          * returns a list of boards for every possible next move
+         * TODO: change playerColor and otherColor
          */
         public List<Board> GetAllMoves (Player player) // ****
         {
             List<Board> allmoves = new List<Board>();
-            string playercolor = (player == Player.MIN) ? "gray" : "white";
-            string othercolor = (playercolor == "gray") ? "white" : "gray";
+            Piece playercolor = (player == Player.MIN) ? Piece.GRAY : Piece.WHITE; 
+            Piece otherPlayer = (player == Player.MIN) ? Piece.WHITE : Piece.GRAY;
             for (int col = 0; col < SIZE; col++)
             {
                 for (int row = 0; row < SIZE; row++)
                 {
-                    string piece = GetPiece(buttons[col, row]);
-                    /** if (!piece || piece == othercolor) //check that there is a piece there that is this color
+                    Piece piece = squares[col, row];
+                    if (!(piece == Piece.EMPTY) || SameColor(piece, otherPlayer)) //check that there is a piece of the other color there
                     {
                         continue;
                     }
                     else
                     {
-                        location square = new location(col, row);
-                        list<board> thesemoves = movesforthispiece(square, othercolor);
-                        allmoves.add(thesemoves); //might need to make sure not null
-
-                    } need leah to explain **/
+                        Location square = new Location(col, row);
+                        List<Board> theseMoves = MovesForThisPiece(square, otherPlayer);
+                        AddListToList(theseMoves, allmoves);
+                    }
                 }
             }
             return allmoves;
@@ -103,23 +107,26 @@ namespace CheckersGame
         /*
         * generate a list of all possible moves for this piece
         */
-        public List<Board> MovesForThisPiece(Location square, string otherColor)
+        public List<Board> MovesForThisPiece(Location square, Piece otherColor)
         {
             List<Board> theseMoves = new List<Board>();
-            //check if king, when uncomment, make the next if an else if
-            //string piece = board[square.col, square.row];
-            //if (piece == "king")
-            //{
-            //    thesemoves.add(checkabove);
-            //    thesemoves.add(checkbelow);
-            //}
-            if (playerColor == topColor) //moving down ** Where is playerColor declared?
+            Piece piece = squares[square.row, square.col];
+            if (piece == Piece.WHITE_KING || piece == Piece.GRAY_KING)
             {
-                theseMoves.Add(CheckBelow(square, otherColor));
+                List<Board> movesAbove = CheckAboveOrBelow(square, piece, true); 
+                AddListToList(movesAbove, theseMoves);
+                List<Board> movesBelow = CheckAboveOrBelow(square, piece, false);
+                AddListToList(movesBelow, theseMoves);
+            }
+            else if (SameColor(piece, topColor)) //moving down ** Where is topColor declared?
+            {
+                List<Board> movesBelow = CheckAboveOrBelow(square, piece, false);
+                AddListToList(movesBelow, theseMoves);
             }
             else //moving up
             {
-                theseMoves.Add(CheckAbove(square, otherColor));
+                List<Board> movesAbove = CheckAboveOrBelow(square, piece, true);
+                AddListToList(movesAbove, theseMoves);
             }
             return theseMoves;
             //}
@@ -127,64 +134,70 @@ namespace CheckersGame
 
         /*
          * check if moves are possible above and returns the boards of possible moves 
+         * TODO: combine right and left
          */
-        public List<Board> checkabove(Location location, string playerColor, string otherColor)
+        public List<Board> CheckAboveOrBelow(Location location, Piece playerPiece, bool above)
         {
             List<Board> moves = new List<Board>();
             int col = location.col;
             int row = location.row;
-            if (!(col == 0)) //not first row
+            bool firstRow = (row == 0);
+            bool lastRow = (row == SIZE-1);
+            if (!(above && firstRow) && !(!above && lastRow)) //not first or lastrow
             {
-                bool firstrow = false;
-                bool lastrow = false;
+                bool firstCol = false;
+                bool lastCol = false;
                 if (row == 0)
                 {
-                    firstrow = true;
+                    firstCol = true;
                 }
                 if (row == SIZE - 1)
                 {
-                    lastrow = true;
+                    lastCol = true;
                 }
-                string left = firstrow ? null : GetPiece(buttons[col - 1, row - 1]);
-                string right = lastrow ? null : GetPiece(buttons[col - 1, row + 1]);
-                if (!firstrow) //check left side
+                int checkingRow = above ? row - 1 : row + 1;
+                Piece left = firstCol ? Piece.NULL : squares[checkingRow, col -1];
+                Piece right = lastCol ? Piece.NULL : squares[checkingRow, col + 1];
+                if (!firstCol) //check left side
                 {
-                    if (!left) // fix this - its not a condition
+                    if (left != Piece.NULL) 
                     {
-                        Location moveto = new Location(col - 1, row - 1);
-                        moves.Add(MakeMove(location, moveto, playerColor));
+                        Location moveto = new Location(col - 1, checkingRow);
+                        moves.Add(MakeMove(location, moveto, playerPiece));
                     }
                     else
                     {
-                        if (col - 2 > 0 && row - 2 > 0)
+                        int jumpingRow = above ? row - 2 : row + 2;
+                        if ((col - 2 >= 0) && (jumpingRow >= 0) && (jumpingRow < SIZE)) //check for jump
                         {
-                            Location middle = new Location(col - 1, row - 1);
-                            Location end = new Location(col - 2, row - 2);
-                            Board jumpedBoard = MakeJump(location, middle, end, playerColor);
-                            if (jumpedBoard) // how is this a condition? 
+                            Location middle = new Location(col - 1, checkingRow);
+                            Location end = new Location(col - 2, jumpingRow);
+                            Board jumpedBoard = MakeJump(location, middle, end, playerPiece);
+                            if (jumpedBoard != null)  
                             {
                                 moves.Add(jumpedBoard);
                             }
                         }
                     }
                 }
-                if (!lastrow) //check right side
+                if (!lastCol) //check right side
                 {
-                    if (!right) // how is this a condition?
+                    if (right != Piece.NULL) 
                     {
-                        Location moveto = new Location(col - 1, row + 1);
-                        moves.Add(MakeMove(location, moveto, playerColor)); 
+                        Location moveto = new Location(col + 1, checkingRow);
+                        moves.Add(MakeMove(location, moveto, playerPiece)); 
                      }
                     else
                     {
-                        if (col - 2 > 0 && row + 2 < SIZE)
+                        int jumpingRow = above ? row - 2 : row + 2;
+                        if ((col + 2 < SIZE) && (jumpingRow < SIZE) && (jumpingRow >= 0))
                         {
-                            Location middle = new Location(col - 1, row + 1);
-                            Location end = new Location(col - 2, row + 2);
-                            Board jumpedboard = MakeJump(location, middle, end, playerColor);
-                            if (jumpedBoard)
+                            Location middle = new Location(col + 1, checkingRow);
+                            Location end = new Location(col + 2, jumpingRow);
+                            Board jumpedBoard = MakeJump(location, middle, end, playerPiece);
+                            if (jumpedBoard != null)
                             {
-                                moves.Add(jumpedboard); 
+                                moves.Add(jumpedBoard); 
                             }
                         }
                     }
@@ -193,130 +206,58 @@ namespace CheckersGame
             return moves;
         }
 
-        /*
-       * check if moves are possible below and returns the boards of possible moves 
-       */
-        public List<Board> CheckBelow(Location location, string otherColor)
-        {
-            List<Board> moves = new List<Board>();
-            int col = location.col;
-            int row = location.row;
-            if (!(col == SIZE)) //not last row
-            {
-                bool firstrow = false;
-                bool lastrow = false;
-                if (row == 0)
-                {
-                    firstrow = true;
-                }
-                if (row == SIZE - 1)
-                {
-                    lastrow = true;
-                }
-                string left = firstrow ? null : GetPiece(Board[col + 1, row - 1]);
-                string right = lastrow ? null : GetPiece(Board[col + 1, row + 1]);
-                if (!firstrow) //check left side
-                {
-                    if (!left) // see similar comments for CheckAbove
-                    {
-                        Location moveto = new Location(col + 1, row - 1);
-                        moves.Add(MakeMove(location, moveto, playerColor));
-                    }
-                    else
-                    {
-                        if (col + 2 > 0 && row - 2 > 0)
-                        {
-                            Location middle = new Location(col + 1, row - 1);
-                            Location end = new Location(col + 2, row - 2);
-                            Board jumpedboard = MakeJump(location, middle, end, playerColor);
-                            if (jumpedBoard)
-                            {
-                                moves.Add(jumpedboard);
-                            }
-                        }
-                    }
-                }
-                if (!lastrow) //check right side
-                {
-                    if (!right)
-                    {
-                        Location moveTo = new Location(col + 1, row + 1);
-                        moves.Add(MakeMove(location, moveTo, playerColor))
-                     }
-                    else
-                    {
-                        if (col - 2 > 0 && row + 2 < SIZE)
-                        {
-                            Location middle = new Location(col + 1, row + 1);
-                            Location end = new Location(col + 2, row + 2);
-                            Board jumpedboard = MakeJump(location, middle, end, playerColor);
-                            if (jumpedBoard)
-                            {
-                                moves.Add(jumpedboard);
-                            }
-                        }
-                    }
-                }
-            }
-            return moves;
-        }
-        // can check above and check below call one method
 
         /* 
         * returns a copy of the board with the new move
         */
-        public Board MakeMove(Location starting, Location ending, string color)
+        public Board MakeMove(Location starting, Location ending, Piece color)
         {
             Board movedBoard = this.Copy();
-            movedBoard[starting.col, starting.row].Tag = "none";
-            movedBoard[ending.col, ending.row].Tag = color; // should be row, col not col, row
+            movedBoard.squares[starting.row, starting.col] = Piece.EMPTY;
+            movedBoard.squares[ending.row, ending.col] = color; 
             return movedBoard;
         }
 
-        // /*
-        //* checks if a jump is possible and returns a copy of the board with the new move if it is
-        //*/
-        public Board MakeJump(Location starting, Location middle, Location end, string color)
+        /*
+       * checks if a jump is possible and returns a copy of the board with the new move if it is
+       */
+        public Board MakeJump(Location starting, Location middle, Location end, Piece startingPiece)
         {
             Board jumpedBoard = null;
-            string middleColor = GetPiece(buttons[middle.col, middle.row]));
-            string endPiece = GetPiece(buttons[end.col, end.row]);
-            if ((middle != color) && (!endPiece)) //checks that a jump is possible *** .equals() for middle and what condition are you checking on end piece? 
+            Piece middlePiece = squares[middle.row, middle.col];
+            Piece endPiece = squares[end.row, end.col];
+            if (!SameColor(middlePiece, startingPiece) && (endPiece == Piece.EMPTY)) //checks that a jump is possible 
             {
-                jumpedBoard = this.copy;
-                jumpedBoard[starting.col, starting.row].tag = "none";
-                jumpedBoard[middle.col, middle.row].tag = "none";
-                jumpedBoard[end.col, end.row].tag = color;
-                jumpedBoard.decrementPieces(color);
+                jumpedBoard = this.Copy();
+                jumpedBoard.squares[starting.row, starting.col] = Piece.EMPTY;
+                jumpedBoard.squares[middle.row, middle.col] = Piece.EMPTY;
+                jumpedBoard.squares[end.row, end.col] = startingPiece;
+                jumpedBoard.decrementPieces(startingPiece);
             }
             return jumpedBoard;
         }
 
         /*
-        * TODO
         * Makes a deep copy of the board
         */
         public Board Copy()
         {
-            throw new NotImplementedException(); 
-        }
-
-        /*
-        * returns the color of the square and null if empty
-        */
-        public String GetPiece(Button square)
-        {
-            String piece = square.Tag.ToString();
-            if (piece == "none")
+            Board copiedBoard = new Board();
+            for(int row = 0; row < SIZE; row++)
             {
-                piece = null;
+                for(int col = 0; col < SIZE; col++)
+                {
+                    copiedBoard.squares[row, col] = this.squares[row, col];
+                }
             }
-            return piece;
+            copiedBoard.whitePieces = this.whitePieces;
+            copiedBoard.grayPieces = this.grayPieces;
+            return copiedBoard;
         }
 
         public bool IsLegal(Location origin, Location destination, Player player)
         {
-            if (buttons[origin.row, origin.col].Tag.Equals("none") || !buttons[destination.row, destination.col].Tag.Equals("none"))
+            if (squares[origin.row, origin.col] == Piece.EMPTY || !(squares[destination.row, destination.col] == Piece.EMPTY))
             {
                 return false;
             }
@@ -326,11 +267,11 @@ namespace CheckersGame
                 {
                     return true;
                 }
-                else if (destination.row == origin.row + 2 && destination.col == origin.col + 2 && buttons[origin.row + 1, origin.col + 1].Text.Equals((game.GetComputerColor()))) // single capture - right (Hadassah - figure out tags)
+                else if (destination.row == origin.row + 2 && destination.col == origin.col + 2 && squares[origin.row + 1, origin.col + 1].Text.Equals((game.GetComputerColor()))) // single capture - right (Hadassah - figure out tags)
                 {
                     return true;
                 }
-                else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 && buttons[origin.row + 1, origin.col - 1].Text.Equals((game.GetComputerColor()))) // single capture - left
+                else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 && squares[origin.row + 1, origin.col - 1].Text.Equals((game.GetComputerColor()))) // single capture - left
                 {
                     return true;
                 }
@@ -341,11 +282,11 @@ namespace CheckersGame
                 {
                     return true;
                 }
-                else if (destination.row == origin.row - 2 && destination.col == origin.col + 2 && buttons[origin.row - 1, origin.col + 1].Text.Equals((game.GetHumanColor()))) // single capture - right (Hadassah - figure out tags)
+                else if (destination.row == origin.row - 2 && destination.col == origin.col + 2 && squares[origin.row - 1, origin.col + 1].Text.Equals((game.GetHumanColor()))) // single capture - right (Hadassah - figure out tags)
                 {
                     return true;
                 }
-                else if (destination.row == origin.row - 2 && destination.col == origin.col - 2 && buttons[origin.row - 1, origin.col - 1].Text.Equals((game.GetHumanColor()))) // single capture - left
+                else if (destination.row == origin.row - 2 && destination.col == origin.col - 2 && squares[origin.row - 1, origin.col - 1].Text.Equals((game.GetHumanColor()))) // single capture - left
                 {
                     return true;
                 }
@@ -362,10 +303,8 @@ namespace CheckersGame
 
         /*
         * If either player has no more peices on the board, this returns true
-        * TODO: store the number of white and gray pieces in the class, call this in alpha beta
+        * TODO: call this in alpha beta
         */
-        
-
         public bool gameOver()
         {
             return this.whitePieces == 0 || this.grayPieces == 0;
@@ -374,6 +313,34 @@ namespace CheckersGame
         public Player GetWinner()
         {
             throw new NotImplementedException(); 
+        }
+
+        private void AddListToList(List<Board> listFrom, List<Board> listTo)
+        {
+            foreach(Board item in listFrom)
+            {
+                listTo.Add(item);
+            }
+        }
+
+        private bool SameColor(Piece piece1, Piece piece2)
+        {
+            bool sameColor = (piece1 == Piece.GRAY || piece1 == Piece.GRAY_KING) && //piece1 is gray
+                (piece2 == Piece.GRAY || piece2 == Piece.GRAY_KING) ? true : //piece2 is gray
+                (piece1 == Piece.WHITE || piece1 == Piece.WHITE_KING) && //piece1 is white
+                (piece2 == Piece.WHITE || piece2 == Piece.WHITE_KING) ? true : false; //piece2 is white
+
+           return sameColor;
+        }
+
+        private bool IsWhite(Piece piece)
+        {
+            return piece == Piece.WHITE || piece == Piece.WHITE_KING;
+        }
+
+        private bool IsGray(Piece piece)
+        {
+            return !IsWhite(piece) && !(piece == Piece.NULL || piece == Piece.EMPTY);
         }
 
     }
