@@ -10,7 +10,7 @@ namespace CheckersGame
     {
         public static readonly int SIZE = 8;
         Piece[,] squares = new Piece[SIZE, SIZE];
-        public static readonly Piece topColor; //TODO: this
+        public readonly Piece topColor;
         private int whitePieces = 0;
         private int grayPieces = 0;
         private Game game;
@@ -20,14 +20,15 @@ namespace CheckersGame
             squares = new Piece[SIZE, SIZE];
         }
 
-        public Board(Button[,] button)
+        public Board(Button[,] buttons)
         {
+            topColor = buttons[0, 0].Tag.Equals("gray") ? Piece.GRAY : Piece.WHITE;
             squares = new Piece[SIZE, SIZE];
             for (int row = 0; row < SIZE; row++)
             {
                 for (int col = 0; col < SIZE; col++)
                 {
-                    String square = button[row, col].Tag.ToString();
+                    String square = buttons[row, col].Tag.ToString();
                     squares[row, col] = square.Equals("white") ? Piece.WHITE :
                         square.Equals("whiteKing") ? Piece.WHITE_KING :
                         square.Equals("gray") ? Piece.GRAY :
@@ -47,7 +48,6 @@ namespace CheckersGame
 
         /*
          * Function is called to decrement the total number of pieces for a color when a piece is captured
-         * TODO: change to MAX and MIN
          */
         private void decrementPieces(Piece capturingPiece)
         {
@@ -77,7 +77,6 @@ namespace CheckersGame
 
         /*
          * returns a list of boards for every possible next move
-         * TODO: change playerColor and otherColor
          */
         public List<Board> GetAllMoves (Player player) // ****
         {
@@ -113,12 +112,12 @@ namespace CheckersGame
             Piece piece = squares[square.row, square.col];
             if (piece == Piece.WHITE_KING || piece == Piece.GRAY_KING)
             {
-                List<Board> movesAbove = CheckAboveOrBelow(square, piece, true); 
+                List<Board> movesAbove = CheckAboveOrBelow(square, piece, true); //checking possible moves going up
                 AddListToList(movesAbove, theseMoves);
-                List<Board> movesBelow = CheckAboveOrBelow(square, piece, false);
+                List<Board> movesBelow = CheckAboveOrBelow(square, piece, false); //checking possible moves going down
                 AddListToList(movesBelow, theseMoves);
             }
-            else if (SameColor(piece, topColor)) //moving down ** Where is topColor declared?
+            else if (SameColor(piece, topColor)) //moving down
             {
                 List<Board> movesBelow = CheckAboveOrBelow(square, piece, false);
                 AddListToList(movesBelow, theseMoves);
@@ -129,7 +128,6 @@ namespace CheckersGame
                 AddListToList(movesAbove, theseMoves);
             }
             return theseMoves;
-            //}
         }
 
         /*
@@ -218,7 +216,7 @@ namespace CheckersGame
             return movedBoard;
         }
 
-        /*
+       /*
        * checks if a jump is possible and returns a copy of the board with the new move if it is
        */
         public Board MakeJump(Location starting, Location middle, Location end, Piece startingPiece)
