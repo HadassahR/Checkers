@@ -192,6 +192,32 @@ namespace CheckersProject
             game.NextPlayersTurn();
             UpdateTurn(game.GetCurrentPlayer()); 
             UpdateScoreDisplay(); 
+
+            // check is legal somewhere
+
+            
+            if (board.AnotherCapture(-----) == 0)
+            {
+                // END OF TURN (else its gonna be a while loop)
+            } 
+            while (board.AnotherCapture != 0)
+            {
+                if (board.AnotherCapture() == 1)
+                    {
+                        // make that move -- figure out which move is legal 
+                    } 
+                else if (board.AnotherCapture() == 2)
+                {
+                    MessageBox.Show("Select right or left capture"); // how will user do this
+                    // if right 
+                        // make right jump
+                    // if left
+                        // make left jump
+                }
+            }
+
+
+            // END OF TURN
             game.SetOriginClicked(null, false); 
             game.SetDestinationClicked(null, false); 
             //if (board.IsGameOver())
