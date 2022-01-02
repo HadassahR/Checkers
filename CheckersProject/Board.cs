@@ -253,6 +253,9 @@ namespace CheckersGame
             return copiedBoard;
         }
 
+        /*
+        * returns the color of the square and null if empty
+        */
         public bool IsLegal(Location origin, Location destination, Player player)
         {
             if (squares[origin.row, origin.col] == Piece.EMPTY || !(squares[destination.row, destination.col] == Piece.EMPTY))
@@ -292,8 +295,15 @@ namespace CheckersGame
             return false;
         }
 
-        public bool AnotherCapture()
+        public bool AnotherCapture(Board button, Location currentPiece, Player player)
         {
+            if (player.Equals(Player.MIN))
+            {
+                if (IsLegal(currentPiece, new Location(buttons[currentPiece.col + 2, currentPiece.row + 2]), player))
+                {
+
+                }
+            }
             // This will check if there as opponents piece to the right or left. If its legal (with current origina and new destination, 
             // it will see if its an option to move and will move. If it is legal, another jump is ture. If not, its false. If true, second jump will be taken
             return false; 
