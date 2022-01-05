@@ -196,11 +196,11 @@ namespace CheckersProject
             // check is legal somewhere
 
             
-            if (board.AnotherCapture(-----) == 0)
+            if (board.AnotherCapture() == 0)
             {
                 // END OF TURN (else its gonna be a while loop)
             } 
-            while (board.AnotherCapture != 0)
+            while (board.AnotherCapture() != 0)
             {
                 if (board.AnotherCapture() == 1)
                     {

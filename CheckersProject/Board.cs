@@ -299,7 +299,7 @@ namespace CheckersGame
         {
             if (player.Equals(Player.MIN))
             {
-                if (IsLegal(currentPiece, new Location(buttons[currentPiece.col + 2, currentPiece.row + 2]), player))
+                if (IsLegal(currentPiece, new Location(squares[currentPiece.col + 2, currentPiece.row + 2]), player))
                 {
 
                 }
