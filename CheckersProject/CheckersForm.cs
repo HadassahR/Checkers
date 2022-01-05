@@ -28,7 +28,6 @@ namespace CheckersProject
                 { square49, square50, square51, square52, square53, square54, square55, square56},
                 { square57, square58, square59, square60, square61, square62, square63, square64}
             };
-            board = new Board(buttons);
             game = new Game(); 
         }
         private void BtnStart_Click(object sender, EventArgs e)
@@ -61,15 +60,15 @@ namespace CheckersProject
         {
             if (radioYou.Checked)
             {
-                InitializeTop(Properties.Resources.checkerGray, "White");
-                InitializeBottom(Properties.Resources.checkerWhite, "Gray");
+                InitializeTop(Properties.Resources.checkerGray, "white");
+                InitializeBottom(Properties.Resources.checkerWhite, "gray");
                 game.SetStartingPlayer(Player.MIN);
                 UpdateTurn(Player.MIN); 
             }
             else if (radioComputer.Checked)
             {
-                InitializeTop(Properties.Resources.checkerWhite, "Gray");
-                InitializeBottom(Properties.Resources.checkerGray, "White");
+                InitializeTop(Properties.Resources.checkerWhite, "gray");
+                InitializeBottom(Properties.Resources.checkerGray, "white");
                 game.SetStartingPlayer(Player.MAX);
                 UpdateTurn(Player.MIN); 
             }
@@ -107,12 +106,12 @@ namespace CheckersProject
                     }
                 }
             }
+            board = new Board(buttons);
         }
         private void SquareOnClick(object sender, EventArgs e)
         {
             Button btn = (Button) sender;
-            bool pieceOfCurrentPlayer = game.GetCurrentPlayer().Equals(Player.MAX) && game.GetComputerColor().ToString().Equals(btn.Tag.ToString()) ? true
-                : game.GetCurrentPlayer().Equals(Player.MIN) && game.GetHumanColor().ToString().Equals(btn.Tag.ToString()) ? true : false;
+            bool pieceOfCurrentPlayer = game.GetCurrentPlayer().Equals(Player.MAX) && game.GetComputerColor().ToString().Equals(btn.Tag.ToString()) || (game.GetCurrentPlayer().Equals(Player.MIN) && game.GetHumanColor().ToString().Equals(btn.Tag.ToString()) ? true : false);
             
             if (!btn.Tag.Equals("none") && pieceOfCurrentPlayer && !game.IsOriginClicked()) // Must belong to current player
             {
@@ -182,25 +181,19 @@ namespace CheckersProject
 
             buttons[origin.row, origin.col].Tag = "none"; 
             buttons[origin.row, origin.col].BackgroundImage = Properties.Resources.checkerNone;
-            if (player == Player.MIN)
-            {
-                game.IncreaseHumanScore(1); // clarify this
-            } else
-            {
-                game.IncreaseComputerScore(1); 
-            }
+
             game.NextPlayersTurn();
+
             UpdateTurn(game.GetCurrentPlayer()); 
-            UpdateScoreDisplay(); 
 
             // check is legal somewhere
 
             
-            if (board.AnotherCapture(-----) == 0)
+            if (board.AnotherCapture() == 0)
             {
                 // END OF TURN (else its gonna be a while loop)
             } 
-            while (board.AnotherCapture != 0)
+            while (board.AnotherCapture() != 0)
             {
                 if (board.AnotherCapture() == 1)
                     {

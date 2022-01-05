@@ -49,7 +49,7 @@ namespace CheckersGame
         /*
          * Function is called to decrement the total number of pieces for a color when a piece is captured
          */
-        private void decrementPieces(Piece capturingPiece)
+        private void DecrementPieces(Piece capturingPiece)
         {
             if (IsWhite(capturingPiece))
             {
@@ -71,14 +71,13 @@ namespace CheckersGame
 
         public bool PossibleCapture ()
         {
-            throw new NotImplementedException(); 
-            return true; 
+            throw new NotImplementedException(); // Eliana
         }
 
         /*
          * returns a list of boards for every possible next move
          */
-        public List<Board> GetAllMoves (Player player) // ****
+        public List<Board> GetAllMoves (Player player) 
         {
             List<Board> allmoves = new List<Board>();
             Piece playercolor = (player == Player.MIN) ? Piece.GRAY : Piece.WHITE; 
@@ -161,7 +160,7 @@ namespace CheckersGame
                     if (left != Piece.NULL) 
                     {
                         Location moveto = new Location(col - 1, checkingRow);
-                        moves.Add(MakeMove(location, moveto, playerPiece));
+                        moves.Add(MakeMoveCopy(location, moveto, playerPiece));
                     }
                     else
                     {
@@ -170,7 +169,7 @@ namespace CheckersGame
                         {
                             Location middle = new Location(col - 1, checkingRow);
                             Location end = new Location(col - 2, jumpingRow);
-                            Board jumpedBoard = MakeJump(location, middle, end, playerPiece);
+                            Board jumpedBoard = MakeJumpCopy(location, middle, end, playerPiece);
                             if (jumpedBoard != null)  
                             {
                                 moves.Add(jumpedBoard);
@@ -183,7 +182,7 @@ namespace CheckersGame
                     if (right != Piece.NULL) 
                     {
                         Location moveto = new Location(col + 1, checkingRow);
-                        moves.Add(MakeMove(location, moveto, playerPiece)); 
+                        moves.Add(MakeMoveCopy(location, moveto, playerPiece)); 
                      }
                     else
                     {
@@ -192,7 +191,7 @@ namespace CheckersGame
                         {
                             Location middle = new Location(col + 1, checkingRow);
                             Location end = new Location(col + 2, jumpingRow);
-                            Board jumpedBoard = MakeJump(location, middle, end, playerPiece);
+                            Board jumpedBoard = MakeJumpCopy(location, middle, end, playerPiece);
                             if (jumpedBoard != null)
                             {
                                 moves.Add(jumpedBoard); 
@@ -204,11 +203,10 @@ namespace CheckersGame
             return moves;
         }
 
-
         /* 
         * returns a copy of the board with the new move
         */
-        public Board MakeMove(Location starting, Location ending, Piece color)
+        public Board MakeMoveCopy(Location starting, Location ending, Piece color)
         {
             Board movedBoard = this.Copy();
             movedBoard.squares[starting.row, starting.col] = Piece.EMPTY;
@@ -223,10 +221,16 @@ namespace CheckersGame
             return movedBoard;
         }
 
+        public void MakeMove(Location starting, Location ending, Piece color)
+        {
+            squares[starting.row, starting.col] = Piece.EMPTY;
+            squares[ending.row, ending.col] = color;
+        }
+        
        /*
        * checks if a jump is possible and returns a copy of the board with the new move if it is
        */
-        public Board MakeJump(Location starting, Location middle, Location end, Piece startingPiece)
+        public Board MakeJumpCopy(Location starting, Location middle, Location end, Piece startingPiece)
         {
             Board jumpedBoard = null;
             Piece middlePiece = squares[middle.row, middle.col];
@@ -236,6 +240,7 @@ namespace CheckersGame
                 jumpedBoard = this.Copy();
                 jumpedBoard.squares[starting.row, starting.col] = Piece.EMPTY;
                 jumpedBoard.squares[middle.row, middle.col] = Piece.EMPTY;
+
                 if (end.row == 0 || end.row == SIZE-1)
                 {
                     jumpedBoard.squares[end.row, end.col] = GetKing(startingPiece);
@@ -247,6 +252,19 @@ namespace CheckersGame
                 jumpedBoard.decrementPieces(startingPiece);
             }
             return jumpedBoard;
+        }
+
+        public void MakeJump(Location starting, Location middle, Location end, Piece startingPiece)
+        {
+            Piece middlePiece = squares[middle.row, middle.col];
+            Piece endPiece = squares[end.row, end.col];
+            if (!SameColor(middlePiece, startingPiece) && (endPiece == Piece.EMPTY)) //checks that a jump is possible 
+            {
+                squares[starting.row, starting.col] = Piece.EMPTY;
+                squares[middle.row, middle.col] = Piece.EMPTY;
+                squares[end.row, end.col] = startingPiece;
+                DecrementPieces(startingPiece);
+            }
         }
 
         /*
@@ -282,11 +300,11 @@ namespace CheckersGame
                 {
                     return true;
                 }
-                else if (destination.row == origin.row + 2 && destination.col == origin.col + 2 && squares[origin.row + 1, origin.col + 1].Text.Equals((game.GetComputerColor()))) // single capture - right (Hadassah - figure out tags)
+                else if (destination.row == origin.row + 2 && destination.col == origin.col + 2 && SameColor(squares[origin.row + 1, origin.col + 1], game.GetComputerColor())) // single capture - right (Hadassah - figure out tags)
                 {
                     return true;
                 }
-                else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 && squares[origin.row + 1, origin.col - 1].Text.Equals((game.GetComputerColor()))) // single capture - left
+                else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 && SameColor(squares[origin.row + 1, origin.col - 1], (game.GetComputerColor()))) // single capture - left
                 {
                     return true;
                 }
@@ -297,11 +315,11 @@ namespace CheckersGame
                 {
                     return true;
                 }
-                else if (destination.row == origin.row - 2 && destination.col == origin.col + 2 && squares[origin.row - 1, origin.col + 1].Text.Equals((game.GetHumanColor()))) // single capture - right (Hadassah - figure out tags)
+                else if (destination.row == origin.row - 2 && destination.col == origin.col + 2 && SameColor(squares[origin.row - 1, origin.col + 1], game.GetHumanColor())) // single capture - right (Hadassah - figure out tags)
                 {
                     return true;
                 }
-                else if (destination.row == origin.row - 2 && destination.col == origin.col - 2 && squares[origin.row - 1, origin.col - 1].Text.Equals((game.GetHumanColor()))) // single capture - left
+                else if (destination.row == origin.row - 2 && destination.col == origin.col - 2 && SameColor(squares[origin.row - 1, origin.col - 1], game.GetHumanColor())) // single capture - left
                 {
                     return true;
                 }
@@ -309,32 +327,47 @@ namespace CheckersGame
             return false;
         }
 
-        public bool AnotherCapture(Board button, Location currentPiece, Player player)
+        public int AnotherCapture(Location currentPiece, Player player)
         {
+            int possibleJumps = 0; 
             if (player.Equals(Player.MIN))
             {
-                if (IsLegal(currentPiece, new Location(buttons[currentPiece.col + 2, currentPiece.row + 2]), player))
+                if (IsLegal(currentPiece, new Location(currentPiece.col + 2, currentPiece.row + 2), player))
                 {
-
+                    possibleJumps++; // jump to right
                 }
+                if (IsLegal(currentPiece, new Location(currentPiece.col - 2, currentPiece.row + 2), player))
+                {
+                    possibleJumps++; // jump to left
+                }
+                return possibleJumps; 
+            }
+
+            if (player.Equals(Player.MAX))
+            {
+                if (IsLegal(currentPiece, new Location(currentPiece.col + 2, currentPiece.row - 2), player))
+                {
+                    possibleJumps++; // jump to right
+                }
+                if (IsLegal(currentPiece, new Location(currentPiece.col - 2, currentPiece.row - 2), player))
+                {
+                    possibleJumps++; // jump to left
+                }
+
+                return possibleJumps;
             }
             // This will check if there as opponents piece to the right or left. If its legal (with current origina and new destination, 
             // it will see if its an option to move and will move. If it is legal, another jump is ture. If not, its false. If true, second jump will be taken
-            return false; 
+            return possibleJumps; 
         }
 
         /*
         * If either player has no more peices on the board, this returns true
         * TODO: call this in alpha beta
         */
-        public bool gameOver()
+        public bool GameOver()
         {
             return this.whitePieces == 0 || this.grayPieces == 0;
-        }
-
-        public Player GetWinner()
-        {
-            throw new NotImplementedException(); 
         }
 
         private void AddListToList(List<Board> listFrom, List<Board> listTo)

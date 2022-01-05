@@ -12,8 +12,8 @@ namespace CheckersProject
     {
         private Player startingPlayer;
         private Player currentPlayer;
-        private String computerColor;
-        private String humanColor;
+        private Piece computerColor;
+        private Piece humanColor;
         private Button originButton;
         private Button destinationButton; 
         private bool originClicked;
@@ -43,21 +43,21 @@ namespace CheckersProject
         {
             return currentPlayer;
         }
-        public string GetHumanColor()
+        public Piece GetHumanColor()
         {
             return this.humanColor;
         }
         public void SetHumanColor(string tag)
         {
-            this.humanColor = tag;
+            this.humanColor = tag.Contains("white") ? Piece.WHITE : Piece.GRAY; 
         }
-        public string GetComputerColor()
+        public Piece GetComputerColor()
         {
             return this.computerColor;
         }
         public void SetComputerColor(string tag)
         {
-            this.computerColor = tag;
+            this.computerColor = tag.Contains("white") ? Piece.WHITE : Piece.GRAY;
         }
         public Button GetOriginButton()
         {
