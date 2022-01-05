@@ -104,17 +104,10 @@ namespace CheckersProject
             this.chooseDestination = new System.Windows.Forms.Label();
             this.cancel = new System.Windows.Forms.Button();
             this.move = new System.Windows.Forms.Button();
-            this.score = new System.Windows.Forms.GroupBox();
-            this.youScore = new System.Windows.Forms.Label();
-            this.computerScore = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.splitter1 = new System.Windows.Forms.Splitter();
             this.turn = new System.Windows.Forms.Label();
             this.currentTurn = new System.Windows.Forms.Label();
             this.level.SuspendLayout();
             this.startingPlayer.SuspendLayout();
-            this.score.SuspendLayout();
             this.SuspendLayout();
             // 
             // square1
@@ -880,73 +873,6 @@ namespace CheckersProject
             this.move.Visible = false;
             this.move.Click += new System.EventHandler(this.MoveClick);
             // 
-            // score
-            // 
-            this.score.Controls.Add(this.youScore);
-            this.score.Controls.Add(this.computerScore);
-            this.score.Controls.Add(this.label2);
-            this.score.Controls.Add(this.label1);
-            this.score.Controls.Add(this.splitter1);
-            this.score.Location = new System.Drawing.Point(676, 395);
-            this.score.Name = "score";
-            this.score.Size = new System.Drawing.Size(238, 108);
-            this.score.TabIndex = 70;
-            this.score.TabStop = false;
-            this.score.Text = "Score";
-            this.score.Visible = false;
-            // 
-            // youScore
-            // 
-            this.youScore.AutoSize = true;
-            this.youScore.Font = new System.Drawing.Font("Alef", 16F);
-            this.youScore.ForeColor = System.Drawing.Color.DeepPink;
-            this.youScore.Location = new System.Drawing.Point(167, 57);
-            this.youScore.Name = "youScore";
-            this.youScore.Size = new System.Drawing.Size(33, 37);
-            this.youScore.TabIndex = 75;
-            this.youScore.Text = "0";
-            // 
-            // computerScore
-            // 
-            this.computerScore.AutoSize = true;
-            this.computerScore.Font = new System.Drawing.Font("Alef", 16F);
-            this.computerScore.ForeColor = System.Drawing.Color.DeepPink;
-            this.computerScore.Location = new System.Drawing.Point(47, 57);
-            this.computerScore.Name = "computerScore";
-            this.computerScore.Size = new System.Drawing.Size(33, 37);
-            this.computerScore.TabIndex = 74;
-            this.computerScore.Text = "0";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Alef", 10F);
-            this.label2.ForeColor = System.Drawing.Color.DarkGreen;
-            this.label2.Location = new System.Drawing.Point(163, 25);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(41, 23);
-            this.label2.TabIndex = 72;
-            this.label2.Text = "You";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Alef", 10F);
-            this.label1.ForeColor = System.Drawing.Color.DarkGreen;
-            this.label1.Location = new System.Drawing.Point(16, 25);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(86, 23);
-            this.label1.TabIndex = 71;
-            this.label1.Text = "Computer";
-            // 
-            // splitter1
-            // 
-            this.splitter1.Location = new System.Drawing.Point(3, 18);
-            this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(121, 87);
-            this.splitter1.TabIndex = 73;
-            this.splitter1.TabStop = false;
-            // 
             // turn
             // 
             this.turn.AutoSize = true;
@@ -976,7 +902,6 @@ namespace CheckersProject
             this.ClientSize = new System.Drawing.Size(992, 682);
             this.Controls.Add(this.currentTurn);
             this.Controls.Add(this.turn);
-            this.Controls.Add(this.score);
             this.Controls.Add(this.move);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.chooseDestination);
@@ -1054,8 +979,6 @@ namespace CheckersProject
             this.level.PerformLayout();
             this.startingPlayer.ResumeLayout(false);
             this.startingPlayer.PerformLayout();
-            this.score.ResumeLayout(false);
-            this.score.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1138,12 +1061,6 @@ namespace CheckersProject
         private System.Windows.Forms.Label chooseDestination;
         private System.Windows.Forms.Button cancel;
         private System.Windows.Forms.Button move;
-        private System.Windows.Forms.GroupBox score;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Splitter splitter1;
-        private System.Windows.Forms.Label youScore;
-        private System.Windows.Forms.Label computerScore;
         private System.Windows.Forms.Label turn;
         private System.Windows.Forms.Label currentTurn;
     }
