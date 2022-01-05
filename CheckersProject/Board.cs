@@ -249,7 +249,7 @@ namespace CheckersGame
                 {
                     jumpedBoard.squares[end.row, end.col] = startingPiece;
                 }
-                jumpedBoard.decrementPieces(startingPiece);
+                jumpedBoard.DecrementPieces(startingPiece);
             }
             return jumpedBoard;
         }
