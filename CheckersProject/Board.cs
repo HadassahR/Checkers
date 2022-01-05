@@ -210,7 +210,14 @@ namespace CheckersGame
         {
             Board movedBoard = this.Copy();
             movedBoard.squares[starting.row, starting.col] = Piece.EMPTY;
-            movedBoard.squares[ending.row, ending.col] = color; 
+            if (ending.row == 0 || ending.row == SIZE - 1)
+            {
+                movedBoard.squares[ending.row, ending.col] = GetKing(color);
+            }
+            else
+            {
+                movedBoard.squares[ending.row, ending.col] = color;
+            }
             return movedBoard;
         }
 
@@ -233,8 +240,16 @@ namespace CheckersGame
                 jumpedBoard = this.Copy();
                 jumpedBoard.squares[starting.row, starting.col] = Piece.EMPTY;
                 jumpedBoard.squares[middle.row, middle.col] = Piece.EMPTY;
-                jumpedBoard.squares[end.row, end.col] = startingPiece;
-                jumpedBoard.DecrementPieces(startingPiece);
+
+                if (end.row == 0 || end.row == SIZE-1)
+                {
+                    jumpedBoard.squares[end.row, end.col] = GetKing(startingPiece);
+                }
+                else
+                {
+                    jumpedBoard.squares[end.row, end.col] = startingPiece;
+                }
+                jumpedBoard.decrementPieces(startingPiece);
             }
             return jumpedBoard;
         }
@@ -381,6 +396,23 @@ namespace CheckersGame
         private bool IsGray(Piece piece)
         {
             return !IsWhite(piece) && !(piece == Piece.NULL || piece == Piece.EMPTY);
+        }
+
+        /*
+         * Returns the king piece of that color
+         */
+        private Piece GetKing(Piece piece)
+        {
+            Piece king= Piece.NULL;
+            if (IsWhite(piece))
+            {
+                king = Piece.WHITE_KING;
+            }
+            else if (IsGray(piece))
+            {
+                king = Piece.GRAY_KING;
+            }
+            return king;
         }
 
     }
