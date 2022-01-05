@@ -49,7 +49,7 @@ namespace CheckersProject
         }
         public void SetHumanColor(string tag)
         {
-            this.humanColor = tag.Contains("white") ? Piece.WHITE : Piece.GRAY; 
+            this.humanColor = tag.Contains("WHITE") ? Piece.WHITE : Piece.GRAY; 
         }
         public Piece GetComputerColor()
         {
@@ -57,7 +57,7 @@ namespace CheckersProject
         }
         public void SetComputerColor(string tag)
         {
-            this.computerColor = tag.Contains("white") ? Piece.WHITE : Piece.GRAY;
+            this.computerColor = tag.Contains("WHITE") ? Piece.WHITE : Piece.GRAY;
         }
         public Button GetOriginButton()
         {

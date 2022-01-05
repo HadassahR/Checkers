@@ -8,12 +8,12 @@ namespace CheckersProject
 {
     public class Location
     {
-        public int col;
-        public int row; 
-        public Location (int col, int row)
+        public int row;
+        public int col; 
+        public Location (int row, int col)
         {
+            this.row = row;
             this.col = col;
-            this.row = row; 
         }
     }
 }

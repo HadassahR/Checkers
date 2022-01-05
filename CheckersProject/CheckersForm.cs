@@ -158,25 +158,18 @@ namespace CheckersProject
         }
         private void MoveChecker(Player player, Location origin, Location destination)
         {
-            buttons[destination.row, destination.col].Tag = buttons[origin.row, origin.col].Tag.ToString();
+            buttons[destination.row, destination.col].Tag = buttons[origin.row, origin.col].Tag;
             if (player == Player.MIN)
             {
-                bool isGray = game.GetHumanColor().Equals(graySquare); 
+                bool isGray = game.GetHumanColor().ToString().Equals(graySquare); 
                 buttons[destination.row, destination.col].BackgroundImage = isGray ? Properties.Resources.checkerGray : Properties.Resources.checkerWhite;  
             } else
             {
-                bool isGray = game.GetComputerColor().Equals(graySquare);
+                bool isGray = game.GetComputerColor().ToString().Equals(graySquare);
                 buttons[destination.row, destination.col].BackgroundImage = isGray ? Properties.Resources.checkerGray : Properties.Resources.checkerWhite;
             }
-
             buttons[origin.row, origin.col].Tag = emptySquare; 
             buttons[origin.row, origin.col].BackgroundImage = Properties.Resources.checkerNone;
-
-            game.NextPlayersTurn();
-
-            UpdateTurn(game.GetCurrentPlayer());
-
-            ResetRound(); // at end of turn
 
             // check is legal somewhere
 
@@ -201,43 +194,34 @@ namespace CheckersProject
             //    }
             //}
 
-
-            // END OF TURN
-
-
             //if (board.IsGameOver())
             //{
             //    EndGame(); 
             //}
+
+            EndOfTurn();
         }
+
+        private void EndOfTurn()
+        {
+            game.NextPlayersTurn();
+            UpdateTurn(game.GetCurrentPlayer());
+            ResetRound();
+        }
+
         private void Cancel_Click(object sender, EventArgs e)
         {
             ResetRound(); 
         }
-
         private void ResetRound()
         {
-            ResetColors();
             cancel.Visible = false;
             move.Visible = false;
+            chooseDestination.Visible = false;
+            game.GetOriginButton().BackColor = Color.Red;
+            game.GetDestinationButton().BackColor = Color.Red;
             game.SetOriginClicked(null, false);
             game.SetDestinationClicked(null, false);
-        }
-        private void ResetColors() // could do with pieces, w/o loops
-        {
-            for (var r = 0; r < BOARD_SIZE; r++)
-            {
-                for (var c = 0; c < BOARD_SIZE; c++)
-                {
-                    if (buttons[r, c].BackColor == Color.Cyan || buttons[r, c].BackColor == Color.Magenta)
-                    {
-                        buttons[r, c].BackColor = Color.Red;
-                        chooseDestination.Visible = false;
-                        game.SetOriginClicked(null, false);
-                        game.SetDestinationClicked(null, false);
-                    }
-                }
-            }
         }
         private void UpdateTurn(Player player)
         {
