@@ -268,11 +268,11 @@ namespace CheckersGame
                 {
                     return true;
                 }
-                else if (destination.row == origin.row + 2 && destination.col == origin.col + 2 && squares[origin.row + 1, origin.col + 1].Text.Equals((game.GetComputerColor()))) // single capture - right (Hadassah - figure out tags)
+                else if (destination.row == origin.row + 2 && destination.col == origin.col + 2 && SameColor(squares[origin.row + 1, origin.col + 1], game.GetComputerColor())) // single capture - right (Hadassah - figure out tags)
                 {
                     return true;
                 }
-                else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 && squares[origin.row + 1, origin.col - 1].Text.Equals((game.GetComputerColor()))) // single capture - left
+                else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 && SameColor(squares[origin.row + 1, origin.col - 1], (game.GetComputerColor()))) // single capture - left
                 {
                     return true;
                 }
@@ -283,11 +283,11 @@ namespace CheckersGame
                 {
                     return true;
                 }
-                else if (destination.row == origin.row - 2 && destination.col == origin.col + 2 && squares[origin.row - 1, origin.col + 1].Text.Equals((game.GetHumanColor()))) // single capture - right (Hadassah - figure out tags)
+                else if (destination.row == origin.row - 2 && destination.col == origin.col + 2 && SameColor(squares[origin.row - 1, origin.col + 1], game.GetHumanColor())) // single capture - right (Hadassah - figure out tags)
                 {
                     return true;
                 }
-                else if (destination.row == origin.row - 2 && destination.col == origin.col - 2 && squares[origin.row - 1, origin.col - 1].Text.Equals((game.GetHumanColor()))) // single capture - left
+                else if (destination.row == origin.row - 2 && destination.col == origin.col - 2 && SameColor(squares[origin.row - 1, origin.col - 1], game.GetHumanColor())) // single capture - left
                 {
                     return true;
                 }
@@ -295,18 +295,38 @@ namespace CheckersGame
             return false;
         }
 
-        public bool AnotherCapture(Board button, Location currentPiece, Player player)
+        public int AnotherCapture(Location currentPiece, Player player)
         {
+            int possibleJumps = 0; 
             if (player.Equals(Player.MIN))
             {
-                if (IsLegal(currentPiece, new Location(squares[currentPiece.col + 2, currentPiece.row + 2]), player))
+                if (IsLegal(currentPiece, new Location(currentPiece.col + 2, currentPiece.row + 2), player))
                 {
-
+                    possibleJumps++; // jump to right
                 }
+                if (IsLegal(currentPiece, new Location(currentPiece.col - 2, currentPiece.row + 2), player))
+                {
+                    possibleJumps++; // jump to left
+                }
+                return possibleJumps; 
+            }
+
+            if (player.Equals(Player.MAX))
+            {
+                if (IsLegal(currentPiece, new Location(currentPiece.col + 2, currentPiece.row - 2), player))
+                {
+                    possibleJumps++; // jump to right
+                }
+                if (IsLegal(currentPiece, new Location(currentPiece.col - 2, currentPiece.row - 2), player))
+                {
+                    possibleJumps++; // jump to left
+                }
+
+                return possibleJumps;
             }
             // This will check if there as opponents piece to the right or left. If its legal (with current origina and new destination, 
             // it will see if its an option to move and will move. If it is legal, another jump is ture. If not, its false. If true, second jump will be taken
-            return false; 
+            return possibleJumps; 
         }
 
         /*
