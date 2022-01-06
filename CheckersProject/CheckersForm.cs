@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using WECPOFLogic;
 
 namespace CheckersProject
 {
@@ -155,7 +156,16 @@ namespace CheckersProject
                 }
             }
             Piece color = game.GetCurrentPlayer().Equals(Player.MIN) ? game.GetHumanColor() : game.GetComputerColor(); 
-            MoveChecker(game.GetCurrentPlayer(), color, origin, destination); 
+
+            if (board.IsLegal(origin, destination, game.GetCurrentPlayer()))
+            {
+                MoveChecker(game.GetCurrentPlayer(), color, origin, destination);
+            }
+            else
+            {
+                MessageBox.Show("Illegal Move");
+                ResetRound(); 
+            }
         }
         private void MoveChecker(Player player, Piece color, Location origin, Location destination)
         {
@@ -164,44 +174,48 @@ namespace CheckersProject
             buttons[origin.row, origin.col].Tag = emptySquare; 
             buttons[origin.row, origin.col].BackgroundImage = Properties.Resources.checkerNone;
 
-            // check is legal somewhere
+            board.MakeMove(origin, destination, color);
 
 
-            //if (board.AnotherCapture() == 0)
-            //{
-            //    // END OF TURN (else its gonna be a while loop)
-            //} 
-            //while (board.AnotherCapture() != 0)
-            //{
-            //    if (board.AnotherCapture() == 1)
-            //        {
-            //            // make that move -- figure out which move is legal 
-            //        } 
-            //    else if (board.AnotherCapture() == 2)
-            //    {
-            //        MessageBox.Show("Select right or left capture"); // how will user do this
-            //        // if right 
-            //            // make right jump
-            //        // if left
-            //            // make left jump
-            //    }
-            //}
+            while (board.AnotherCapture(destination, player) != 0)
+            {
+                if (board.AnotherCapture(destination, player) == 1)
+                {
+                    // Make that move
+                }
+                else if (board.AnotherCapture(destination, player) == 2)
+                {
+                    MessageBoxManager.Yes = "Right";
+                    MessageBoxManager.No = "Left";
+                    DialogResult result = MessageBox.Show("Select RIGHT or LEFT Capture", "Another Capture", MessageBoxButtons.YesNo);
 
-            //if (board.IsGameOver())
-            //{
-            //    EndGame(); 
-            //}
+                    if (result == DialogResult.Yes)
+                    {
+                        // right jump
+                    }
+                    else
+                    {
+                        // left jump
+                    }
+                }
+                if (board.AnotherCapture(destination, player) == 0)
+                {
+                    EndOfTurn();
+                }
+            }
 
-            EndOfTurn();
+            if (board.GameOver())
+            {
+                EndGame();
+            }
+
         }
-
         private void EndOfTurn()
         {
             game.NextPlayersTurn();
             UpdateTurn(game.GetCurrentPlayer());
             ResetRound();
         }
-
         private void Cancel_Click(object sender, EventArgs e)
         {
             ResetRound(); 
