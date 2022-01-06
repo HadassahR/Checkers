@@ -154,20 +154,13 @@ namespace CheckersProject
                     }
                 }
             }
-            MoveChecker(game.GetCurrentPlayer(), origin, destination); 
+            Piece color = game.GetCurrentPlayer().Equals(Player.MIN) ? game.GetHumanColor() : game.GetComputerColor(); 
+            MoveChecker(game.GetCurrentPlayer(), color, origin, destination); 
         }
-        private void MoveChecker(Player player, Location origin, Location destination)
+        private void MoveChecker(Player player, Piece color, Location origin, Location destination)
         {
             buttons[destination.row, destination.col].Tag = buttons[origin.row, origin.col].Tag;
-            if (player == Player.MIN)
-            {
-                bool isGray = game.GetHumanColor().ToString().Equals(graySquare); 
-                buttons[destination.row, destination.col].BackgroundImage = isGray ? Properties.Resources.checkerGray : Properties.Resources.checkerWhite;  
-            } else
-            {
-                bool isGray = game.GetComputerColor().ToString().Equals(graySquare);
-                buttons[destination.row, destination.col].BackgroundImage = isGray ? Properties.Resources.checkerGray : Properties.Resources.checkerWhite;
-            }
+            buttons[destination.row, destination.col].BackgroundImage = color == Piece.GRAY ? Properties.Resources.checkerWhite : Properties.Resources.checkerGray; 
             buttons[origin.row, origin.col].Tag = emptySquare; 
             buttons[origin.row, origin.col].BackgroundImage = Properties.Resources.checkerNone;
 
@@ -218,8 +211,16 @@ namespace CheckersProject
             cancel.Visible = false;
             move.Visible = false;
             chooseDestination.Visible = false;
-            game.GetOriginButton().BackColor = Color.Red;
-            game.GetDestinationButton().BackColor = Color.Red;
+            if (!game.IsOriginClicked().Equals(null))
+            {
+                game.GetOriginButton().BackColor = Color.Red;
+            }
+
+            if (!game.IsDestinationClicked().Equals(null))
+            {
+                game.GetDestinationButton().BackColor = Color.Red;
+
+            }
             game.SetOriginClicked(null, false);
             game.SetDestinationClicked(null, false);
         }
