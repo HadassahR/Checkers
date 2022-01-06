@@ -117,20 +117,40 @@ namespace CheckersProject
             bool pieceOfCurrentPlayer = game.GetCurrentPlayer().Equals(Player.MAX) && game.GetComputerColor().ToString().Equals(btn.Tag.ToString().ToUpper()) || (game.GetCurrentPlayer().Equals(Player.MIN) && game.GetHumanColor().ToString().Equals(btn.Tag.ToString().ToUpper()) ? true : false);
             bool emptySquare = btn.Tag.Equals(this.emptySquare);
 
+            Location buttonLocation = null;
+            for (var r = 0; r < BOARD_SIZE; r++)
+            {
+                for (var c = 0; c < BOARD_SIZE; c++)
+                {
+                    if (buttons[r, c] == btn)
+                    {
+                        buttonLocation = new Location(r, c);
+                        break;
+                    }
+                }
+            }
+
             if (!emptySquare && pieceOfCurrentPlayer && !game.IsOriginClicked())
             {
                 btn.BackColor = Color.Cyan;
                 chooseDestination.Visible = true;
                 cancel.Visible = true;
                 game.SetOriginClicked(btn, true);
+                game.SetOriginLocation(buttonLocation);
             }
             else if (emptySquare && !game.IsDestinationClicked())
             {
-                btn.BackColor = Color.Magenta;
-                chooseDestination.Visible = false;
-                cancel.Visible = true;
-                game.SetDestinationClicked(btn, true);
-
+                if (board.IsLegal(game.GetOriginLocation(), buttonLocation, game.GetCurrentPlayer()))
+                {
+                    btn.BackColor = Color.Magenta;
+                    chooseDestination.Visible = false;
+                    cancel.Visible = true;
+                    game.SetDestinationClicked(btn, true);
+                }
+                else
+                {
+                    MessageBox.Show("That move is not legal");
+                }
             }
 
             if (game.IsOriginClicked() && game.IsDestinationClicked())
