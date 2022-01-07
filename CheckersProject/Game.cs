@@ -8,7 +8,7 @@ using CheckersProject;
 
 namespace CheckersProject
 {
-    class Game
+    public class Game
     {
         private Player startingPlayer;
         private Player currentPlayer;
@@ -19,7 +19,10 @@ namespace CheckersProject
         private bool originClicked;
         private bool destinationClicked; 
         private int computerScore; 
-        private int humanScore; 
+        private int humanScore;
+        private int depth; //set this based on difficulty
+        public static readonly int MIN_VALUE;
+        public static readonly int MAX_VALUE;
 
         public Game ()
         {
