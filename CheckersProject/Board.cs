@@ -10,25 +10,35 @@ namespace CheckersGame
     {
         public static readonly int SIZE = 8;
         Piece[,] squares = new Piece[SIZE, SIZE];
-        public readonly Piece topColor;
         private int whitePieces = 0;
         private int grayPieces = 0;
         private Game game;
+        public readonly Piece topColor;
+        public readonly Piece bottomColor;
+
 
         /*
          * An overloaded constructor for Copy
          */
-        private Board()
+        private Board(Piece topColor, Piece bottomColor)
+
         {
             squares = new Piece[SIZE, SIZE];
+            this.topColor = topColor;
+            this.bottomColor = bottomColor;
         }
+
+
+        
 
         /*
          * A constructor that takes a 2d array of buttons
          */
-        public Board(Button[,] buttons)
+        public Board(Button[,] buttons, Game game)
         {
-            topColor = buttons[0, 0].Tag.Equals("gray") ? Piece.GRAY : Piece.WHITE;
+            this.game = game;
+            topColor = game.GetComputerColor();
+            bottomColor = game.GetHumanColor();
             squares = new Piece[SIZE, SIZE];
             for (int row = 0; row < SIZE; row++)
             {
@@ -72,7 +82,13 @@ namespace CheckersGame
         */
         public double HeuristicValue()
         {
-            return this.whitePieces - this.grayPieces;
+            int value = 0;
+
+            Piece maxColor = topColor;
+
+            value = IsWhite(maxColor) ? whitePieces - grayPieces : grayPieces - whitePieces;
+            
+            return value;
         }
 
         public bool PossibleCapture ()
@@ -91,9 +107,10 @@ namespace CheckersGame
         public List<Board> GetAllMoves (Player player) 
         {
             List<Board> allmoves = new List<Board>();
-            Piece playercolor = (player == Player.MIN) ? Piece.GRAY : Piece.WHITE; 
-            Piece otherPlayer = (player == Player.MIN) ? Piece.WHITE : Piece.GRAY;
-            if (PossibleCapture())
+            Piece playercolor = (player == Player.MAX) ? topColor : bottomColor; 
+            Piece otherPlayer = (player == Player.MAX) ? bottomColor : topColor;
+            for (int col = 0; col < SIZE; col++)
+
             {
                 allmoves = GetPossibleCaptures(playercolor);
             }
@@ -313,7 +330,7 @@ namespace CheckersGame
         */
         public Board Copy()
         {
-            Board copiedBoard = new Board();
+            Board copiedBoard = new Board(topColor, bottomColor);
             for(int row = 0; row < SIZE; row++)
             {
                 for(int col = 0; col < SIZE; col++)
@@ -323,6 +340,8 @@ namespace CheckersGame
             }
             copiedBoard.whitePieces = this.whitePieces;
             copiedBoard.grayPieces = this.grayPieces;
+            copiedBoard.game = this.game;
+
             return copiedBoard;
         }
 
@@ -409,6 +428,17 @@ namespace CheckersGame
             return this.whitePieces == 0 || this.grayPieces == 0;
         }
 
+        /*
+
+         * A method that returns the winner of the game
+         */
+        public Player GetWinner()
+        {
+            Piece computerColor = game.GetComputerColor();
+            Piece winnerColor = whitePieces == 0 ? Piece.GRAY : Piece.WHITE;
+            Player winner = winnerColor == computerColor ? Player.MAX : Player.MIN;
+            return winner;
+        }
         /*
          * A method to add one list to another
          */

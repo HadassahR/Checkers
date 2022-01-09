@@ -109,7 +109,7 @@ namespace CheckersProject
                     }
                 }
             }
-            board = new Board(buttons);
+            board = new Board(buttons, game);
         }
         private void SquareOnClick(object sender, EventArgs e)
         {
