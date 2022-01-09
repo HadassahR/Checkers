@@ -329,11 +329,11 @@ namespace CheckersGame
        
         public bool IsLegal(Location origin, Location destination, Player player)
         {
-            if (squares[origin.row, origin.col] == Piece.EMPTY || !(squares[destination.row, destination.col] == Piece.EMPTY))
+            if (squares[origin.row, origin.col] == Piece.EMPTY || squares[destination.row, destination.col] != Piece.EMPTY)
             {
                 return false;
             }
-            if (player.Equals(Player.MIN)) // player is human
+            if (player.Equals(Player.MIN) || (player.Equals(Player.MAX) && squares[origin.row, origin.col])) // player is human
             {
                 if (destination.row == origin.row + 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)) // regular move
                 {
