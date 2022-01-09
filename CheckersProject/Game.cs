@@ -15,6 +15,7 @@ namespace CheckersProject
         private Piece computerColor;
         private Piece humanColor;
         private Button originButton;
+        private Location originLocation;
         private Button destinationButton; 
         private bool originClicked;
         private bool destinationClicked; 
@@ -28,6 +29,16 @@ namespace CheckersProject
         {
             this.computerScore = 0;
             this.humanScore = 0; 
+        }
+
+        public void SetOriginLocation(Location loc)
+        {
+            originLocation = loc;
+        }
+
+        public Location GetOriginLocation()
+        {
+            return originLocation;
         }
         public void SetStartingPlayer(Player player)
         {
