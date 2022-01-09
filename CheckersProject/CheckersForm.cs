@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using WECPOFLogic;
 
 namespace CheckersProject
 {
@@ -10,7 +11,10 @@ namespace CheckersProject
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CheckersForm));
         Button[,] buttons;
         Board board;
-        Game game; 
+        Game game;
+        private string emptySquare = "NONE";
+        private string whiteSquare = "WHITE";
+        private string graySquare = "GRAY"; 
         const int BOARD_SIZE = 8;
         public CheckersForm()
         {
@@ -38,14 +42,13 @@ namespace CheckersProject
             level.Visible = false;
             var startBtn = (Button)sender;
             startBtn.Visible = false;
-            score.Visible = true;
         }
         private void InitializeNoneCheckers()
         {
             foreach (var btn in buttons)
             {
                 btn.BackgroundImage = Properties.Resources.checkerNone;
-                btn.Tag = "none";
+                btn.Tag = emptySquare;
                 btn.BackgroundImageLayout = ImageLayout.Stretch;
                 if (btn.BackColor == Color.Black)
                 {
@@ -60,15 +63,15 @@ namespace CheckersProject
         {
             if (radioYou.Checked)
             {
-                InitializeTop(Properties.Resources.checkerGray, "white");
-                InitializeBottom(Properties.Resources.checkerWhite, "gray");
+                InitializeTop(Properties.Resources.checkerGray, whiteSquare);
+                InitializeBottom(Properties.Resources.checkerWhite, graySquare);
                 game.SetStartingPlayer(Player.MIN);
                 UpdateTurn(Player.MIN); 
             }
             else if (radioComputer.Checked)
             {
-                InitializeTop(Properties.Resources.checkerWhite, "gray");
-                InitializeBottom(Properties.Resources.checkerGray, "white");
+                InitializeTop(Properties.Resources.checkerWhite, graySquare);
+                InitializeBottom(Properties.Resources.checkerGray, whiteSquare);
                 game.SetStartingPlayer(Player.MAX);
                 UpdateTurn(Player.MIN); 
             }
@@ -110,38 +113,46 @@ namespace CheckersProject
         }
         private void SquareOnClick(object sender, EventArgs e)
         {
-            Button btn = (Button) sender;
-            bool pieceOfCurrentPlayer = game.GetCurrentPlayer().Equals(Player.MAX) && game.GetComputerColor().ToString().Equals(btn.Tag.ToString()) || (game.GetCurrentPlayer().Equals(Player.MIN) && game.GetHumanColor().ToString().Equals(btn.Tag.ToString()) ? true : false);
-            
-            if (!btn.Tag.Equals("none") && pieceOfCurrentPlayer && !game.IsOriginClicked()) // Must belong to current player
+            Button btn = (Button)sender;
+            bool pieceOfCurrentPlayer = game.GetCurrentPlayer().Equals(Player.MAX) && game.GetComputerColor().ToString().Equals(btn.Tag.ToString().ToUpper()) || (game.GetCurrentPlayer().Equals(Player.MIN) && game.GetHumanColor().ToString().Equals(btn.Tag.ToString().ToUpper()) ? true : false);
+            bool emptySquare = btn.Tag.Equals(this.emptySquare);
+
+            Location buttonLocation = null;
+            for (var r = 0; r < BOARD_SIZE; r++)
             {
-                for (var r = 0; r < BOARD_SIZE; r++)
+                for (var c = 0; c < BOARD_SIZE; c++)
                 {
-                    for (var c = 0; c < BOARD_SIZE; c++)
+                    if (buttons[r, c] == btn)
                     {
-                        if (buttons[r, c].Name == btn.Name)
-                        {
-                            btn.BackColor = Color.Cyan;
-                            chooseDestination.Visible = true; // remember to switch to false in cancel and once move is done
-                            cancel.Visible = true;
-                            game.SetOriginClicked(btn, true);
-                        }
+                        buttonLocation = new Location(r, c);
+                        break;
                     }
                 }
-            } else if (btn.Tag.Equals("none") && !game.IsDestinationClicked())
-                for (var r = 0; r < BOARD_SIZE; r++)
+            }
+
+            if (!emptySquare && pieceOfCurrentPlayer && !game.IsOriginClicked())
+            {
+                btn.BackColor = Color.Cyan;
+                chooseDestination.Visible = true;
+                cancel.Visible = true;
+                game.SetOriginClicked(btn, true);
+                game.SetOriginLocation(buttonLocation);
+            }
+            else if (emptySquare && !game.IsDestinationClicked())
+            {
+                if (board.IsLegal(game.GetOriginLocation(), buttonLocation, game.GetCurrentPlayer()))
                 {
-                    for (var c = 0; c < BOARD_SIZE; c++)
-                    {
-                        if (buttons[r, c].Name == btn.Name)
-                        {
-                            btn.BackColor = Color.Magenta;
-                            chooseDestination.Visible = false; // remember to switch to false in cancel and once move is done
-                            cancel.Visible = true;
-                            game.SetDestinationClicked(btn, true);
-                        }
-                    }
+                    btn.BackColor = Color.Magenta;
+                    chooseDestination.Visible = false;
+                    cancel.Visible = true;
+                    game.SetDestinationClicked(btn, true);
                 }
+                else
+                {
+                    MessageBox.Show("That move is not legal");
+                }
+            }
+
             if (game.IsOriginClicked() && game.IsDestinationClicked())
             {
                 move.Visible = true;
@@ -164,88 +175,88 @@ namespace CheckersProject
                     }
                 }
             }
-            MoveChecker(game.GetCurrentPlayer(), origin, destination); 
-        }
-        private void MoveChecker(Player player, Location origin, Location destination)
-        {
-            buttons[destination.row, destination.col].Tag = buttons[origin.row, origin.col].Tag.ToString();
-            if (player == Player.MIN)
-            {
-                bool gray = game.GetHumanColor().Equals("Gray"); 
-                buttons[destination.row, destination.col].BackgroundImage = gray ? Properties.Resources.checkerGray : Properties.Resources.checkerWhite;  
-            } else
-            {
-                bool gray = game.GetComputerColor().Equals("Gray");
-                buttons[destination.row, destination.col].BackgroundImage = gray ? Properties.Resources.checkerGray : Properties.Resources.checkerWhite;
-            }
+            Piece color = game.GetCurrentPlayer().Equals(Player.MIN) ? game.GetHumanColor() : game.GetComputerColor(); 
 
-            buttons[origin.row, origin.col].Tag = "none"; 
+            if (board.IsLegal(origin, destination, game.GetCurrentPlayer()))
+            {
+                MoveChecker(game.GetCurrentPlayer(), color, origin, destination);
+            }
+            else
+            {
+                MessageBox.Show("Illegal Move");
+                ResetRound(); 
+            }
+        }
+        private void MoveChecker(Player player, Piece color, Location origin, Location destination)
+        {
+            buttons[destination.row, destination.col].Tag = buttons[origin.row, origin.col].Tag;
+            buttons[destination.row, destination.col].BackgroundImage = color == Piece.GRAY ? Properties.Resources.checkerWhite : Properties.Resources.checkerGray; 
+            buttons[origin.row, origin.col].Tag = emptySquare; 
             buttons[origin.row, origin.col].BackgroundImage = Properties.Resources.checkerNone;
 
-            game.NextPlayersTurn();
+            board.MakeMove(origin, destination, color);
 
-            UpdateTurn(game.GetCurrentPlayer()); 
 
-            // check is legal somewhere
-
-            
-            if (board.AnotherCapture() == 0)
+            while (board.AnotherCapture(destination, player) != 0)
             {
-                // END OF TURN (else its gonna be a while loop)
-            } 
-            while (board.AnotherCapture() != 0)
-            {
-                if (board.AnotherCapture() == 1)
-                    {
-                        // make that move -- figure out which move is legal 
-                    } 
-                else if (board.AnotherCapture() == 2)
+                if (board.AnotherCapture(destination, player) == 1)
                 {
-                    MessageBox.Show("Select right or left capture"); // how will user do this
-                    // if right 
-                        // make right jump
-                    // if left
-                        // make left jump
+                    // Make that move
+                }
+                else if (board.AnotherCapture(destination, player) == 2)
+                {
+                    MessageBoxManager.Yes = "Right";
+                    MessageBoxManager.No = "Left";
+                    DialogResult result = MessageBox.Show("Select RIGHT or LEFT Capture", "Another Capture", MessageBoxButtons.YesNo);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        // right jump
+                    }
+                    else
+                    {
+                        // left jump
+                    }
+                }
+                if (board.AnotherCapture(destination, player) == 0)
+                {
+                    EndOfTurn();
                 }
             }
 
+            if (board.GameOver())
+            {
+                EndGame();
+            }
 
-            // END OF TURN
-            game.SetOriginClicked(null, false); 
-            game.SetDestinationClicked(null, false); 
-            //if (board.IsGameOver())
-            //{
-            //    EndGame(); 
-            //}
-            ResetColors();
-            cancel.Visible = false;
-            move.Visible = false; 
         }
-        private void UpdateScoreDisplay()
+        private void EndOfTurn()
         {
-            computerScore.Text = game.GetComputerScore();
-            youScore.Text = game.GetHumanScore(); 
+            game.NextPlayersTurn();
+            UpdateTurn(game.GetCurrentPlayer());
+            ResetRound();
         }
         private void Cancel_Click(object sender, EventArgs e)
         {
-            ResetColors();
-            cancel.Visible = false; 
+            ResetRound(); 
         }
-        private void ResetColors()
+        private void ResetRound()
         {
-            for (var r = 0; r < BOARD_SIZE; r++)
+            cancel.Visible = false;
+            move.Visible = false;
+            chooseDestination.Visible = false;
+            if (!game.IsOriginClicked().Equals(null))
             {
-                for (var c = 0; c < BOARD_SIZE; c++)
-                {
-                    if (buttons[r, c].BackColor == Color.Cyan || buttons[r, c].BackColor == Color.Magenta)
-                    {
-                        buttons[r, c].BackColor = Color.Red;
-                        chooseDestination.Visible = false;
-                        game.SetOriginClicked(null, false);
-                        game.SetDestinationClicked(null, false);
-                    }
-                }
+                game.GetOriginButton().BackColor = Color.Red;
             }
+
+            if (!game.IsDestinationClicked().Equals(null))
+            {
+                game.GetDestinationButton().BackColor = Color.Red;
+
+            }
+            game.SetOriginClicked(null, false);
+            game.SetDestinationClicked(null, false);
         }
         private void UpdateTurn(Player player)
         {

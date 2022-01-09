@@ -15,6 +15,7 @@ namespace CheckersProject
         private Piece computerColor;
         private Piece humanColor;
         private Button originButton;
+        private Location originLocation;
         private Button destinationButton; 
         private bool originClicked;
         private bool destinationClicked; 
@@ -25,6 +26,16 @@ namespace CheckersProject
         {
             this.computerScore = 0;
             this.humanScore = 0; 
+        }
+
+        public void SetOriginLocation(Location loc)
+        {
+            originLocation = loc;
+        }
+
+        public Location GetOriginLocation()
+        {
+            return originLocation;
         }
         public void SetStartingPlayer(Player player)
         {
@@ -49,7 +60,7 @@ namespace CheckersProject
         }
         public void SetHumanColor(string tag)
         {
-            this.humanColor = tag.Contains("white") ? Piece.WHITE : Piece.GRAY; 
+            this.humanColor = tag.Contains("WHITE") ? Piece.WHITE : Piece.GRAY; 
         }
         public Piece GetComputerColor()
         {
@@ -57,7 +68,7 @@ namespace CheckersProject
         }
         public void SetComputerColor(string tag)
         {
-            this.computerColor = tag.Contains("white") ? Piece.WHITE : Piece.GRAY;
+            this.computerColor = tag.Contains("WHITE") ? Piece.WHITE : Piece.GRAY;
         }
         public Button GetOriginButton()
         {
