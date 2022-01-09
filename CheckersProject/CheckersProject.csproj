@@ -118,9 +118,7 @@
     <Content Include="checkerNone.png" />
     <Content Include="checkerWhite.png" />
     <Content Include="checkerWhiteKing.png" />
-    <Content Include="README.md" />
     <Content Include="Resources\checkerGray.png" />
-    <Content Include="screenshots\checkers.png" />
     <None Include="Resources\checkerWhiteKing1.png" />
     <None Include="Resources\checkerWhite1.png" />
     <None Include="Resources\checkerGrayKing1.png" />
