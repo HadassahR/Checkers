@@ -8,3 +8,12 @@ C:\Users\hrose\source\repos\CheckersProject\CheckersProject\bin\Debug\CheckersPr
 C:\Users\hrose\source\repos\CheckersProject\CheckersProject\obj\Debug\CheckersProject.CheckersForm.resources
 C:\Users\hrose\source\repos\CheckersProject\CheckersProject\obj\Debug\CheckersProject.exe
 C:\Users\hrose\source\repos\CheckersProject\CheckersProject\obj\Debug\CheckersProject.pdb
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\bin\Debug\Eco.Handles.dll
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\bin\Debug\Eco.Interfaces.dll
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\bin\Debug\Eco.LinqExtender.dll
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\bin\Debug\Eco.WPF.dll
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\bin\Debug\MDriven.Net.Http.dll
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\bin\Debug\WECPOFLogic.dll
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\bin\Debug\WPFViewModelExternalControls.dll
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\bin\Debug\System.Buffers.dll
+C:\Users\hrose\source\repos\CheckersProject\CheckersProject\obj\Debug\CheckersProject.csproj.CopyComplete

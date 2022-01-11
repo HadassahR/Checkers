@@ -9,7 +9,7 @@ namespace CheckersGame
     public class Board // Leah // 
     {
         public static readonly int SIZE = 8;
-        Piece[,] squares = new Piece[SIZE, SIZE];
+        Piece[,] squares; 
         public readonly Piece topColor;
         private int whitePieces = 0;
         private int grayPieces = 0;
@@ -26,19 +26,19 @@ namespace CheckersGame
         /*
          * A constructor that takes a 2d array of buttons
          */
-        public Board(Button[,] buttons)
+        public Board(Button[,] buttons, Game game)
         {
-            topColor = buttons[0, 0].Tag.Equals("gray") ? Piece.GRAY : Piece.WHITE;
+            topColor = buttons[0, 0].Tag.Equals("GRAY") ? Piece.GRAY : Piece.WHITE;
             squares = new Piece[SIZE, SIZE];
             for (int row = 0; row < SIZE; row++)
             {
                 for (int col = 0; col < SIZE; col++)
                 {
                     String square = buttons[row, col].Tag.ToString();
-                    squares[row, col] = square.Equals("white") ? Piece.WHITE :
-                        square.Equals("whiteKing") ? Piece.WHITE_KING :
-                        square.Equals("gray") ? Piece.GRAY :
-                        square.Equals("grayKing") ? Piece.GRAY_KING : Piece.EMPTY;
+                    squares[row, col] = square.Equals("WHITE") ? Piece.WHITE :
+                        square.Equals("WHITEKING") ? Piece.WHITE_KING :
+                        square.Equals("GRAY") ? Piece.GRAY :
+                        square.Equals("GRAYKING") ? Piece.GRAY_KING : Piece.EMPTY;
 
                     if (squares[row, col] == Piece.GRAY || squares[row, col] == Piece.GRAY_KING)
                     {
@@ -50,6 +50,7 @@ namespace CheckersGame
                     }
                 }
             }
+            this.game = game; 
         }
 
         /*
@@ -329,36 +330,36 @@ namespace CheckersGame
        
         public bool IsLegal(Location origin, Location destination, Player player)
         {
-            if (squares[origin.row, origin.col] == Piece.EMPTY || !(squares[destination.row, destination.col] == Piece.EMPTY))
+            if (squares[origin.row, origin.col] == Piece.EMPTY || squares[destination.row, destination.col] != Piece.EMPTY)
             {
                 return false;
             }
             if (player.Equals(Player.MIN)) // player is human
             {
-                if (destination.row == origin.row + 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)) // regular move
+                if (destination.row == origin.row - 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)) // regular move
                 {
                     return true;
                 }
-                else if (destination.row == origin.row + 2 && destination.col == origin.col + 2 && SameColor(squares[origin.row + 1, origin.col + 1], game.GetComputerColor())) // single capture - right (Hadassah - figure out tags)
+                else if (destination.row == origin.row - 2 && destination.col == origin.col + 2 && SameColor(squares[origin.row + 1, origin.col + 1], game.GetComputerColor())) // single capture - right (Hadassah - figure out tags)
                 {
                     return true;
                 }
-                else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 && SameColor(squares[origin.row + 1, origin.col - 1], (game.GetComputerColor()))) // single capture - left
+                else if (destination.row == origin.row - 2 && destination.col == origin.col - 2 && SameColor(squares[origin.row + 1, origin.col - 1], (game.GetComputerColor()))) // single capture - left
                 {
                     return true;
                 }
             }
             if (player.Equals(Player.MAX)) // player is computer
             {
-                if (destination.row == origin.row - 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1))
+                if (destination.row == origin.row + 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1))
                 {
                     return true;
                 }
-                else if (destination.row == origin.row - 2 && destination.col == origin.col + 2 && SameColor(squares[origin.row - 1, origin.col + 1], game.GetHumanColor())) // single capture - right (Hadassah - figure out tags)
+                else if (destination.row == origin.row + 2 && destination.col == origin.col + 2 && SameColor(squares[origin.row - 1, origin.col + 1], game.GetHumanColor())) // single capture - right (Hadassah - figure out tags)
                 {
                     return true;
                 }
-                else if (destination.row == origin.row - 2 && destination.col == origin.col - 2 && SameColor(squares[origin.row - 1, origin.col - 1], game.GetHumanColor())) // single capture - left
+                else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 && SameColor(squares[origin.row - 1, origin.col - 1], game.GetHumanColor())) // single capture - left
                 {
                     return true;
                 }
