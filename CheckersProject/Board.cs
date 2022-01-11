@@ -9,26 +9,45 @@ namespace CheckersGame
     public class Board // Leah // 
     {
         public static readonly int SIZE = 8;
+<<<<<<< HEAD
         Piece[,] squares; 
         public readonly Piece topColor;
+=======
+        Piece[,] squares = new Piece[SIZE, SIZE];
+>>>>>>> c2ae89c9d8f73d34218a49fd6f5ba06479c4788b
         private int whitePieces = 0;
         private int grayPieces = 0;
         private Game game;
+        public readonly Piece topColor;
+        public readonly Piece bottomColor;
+
 
         /*
          * An overloaded constructor for Copy
          */
-        private Board()
+        private Board(Piece topColor, Piece bottomColor)
+
         {
             squares = new Piece[SIZE, SIZE];
+            this.topColor = topColor;
+            this.bottomColor = bottomColor;
         }
+
+
+        
 
         /*
          * A constructor that takes a 2d array of buttons
          */
         public Board(Button[,] buttons, Game game)
         {
+<<<<<<< HEAD
             topColor = buttons[0, 0].Tag.Equals("GRAY") ? Piece.GRAY : Piece.WHITE;
+=======
+            this.game = game;
+            topColor = game.GetComputerColor();
+            bottomColor = game.GetHumanColor();
+>>>>>>> c2ae89c9d8f73d34218a49fd6f5ba06479c4788b
             squares = new Piece[SIZE, SIZE];
             for (int row = 0; row < SIZE; row++)
             {
@@ -73,7 +92,13 @@ namespace CheckersGame
         */
         public double HeuristicValue()
         {
-            return this.whitePieces - this.grayPieces;
+            int value = 0;
+
+            Piece maxColor = topColor;
+
+            value = IsWhite(maxColor) ? whitePieces - grayPieces : grayPieces - whitePieces;
+            
+            return value;
         }
 
         public bool PossibleCapture ()
@@ -92,9 +117,10 @@ namespace CheckersGame
         public List<Board> GetAllMoves (Player player) 
         {
             List<Board> allmoves = new List<Board>();
-            Piece playercolor = (player == Player.MIN) ? Piece.GRAY : Piece.WHITE; 
-            Piece otherPlayer = (player == Player.MIN) ? Piece.WHITE : Piece.GRAY;
-            if (PossibleCapture())
+            Piece playercolor = (player == Player.MAX) ? topColor : bottomColor; 
+            Piece otherPlayer = (player == Player.MAX) ? bottomColor : topColor;
+            for (int col = 0; col < SIZE; col++)
+
             {
                 allmoves = GetPossibleCaptures(playercolor);
             }
@@ -314,7 +340,7 @@ namespace CheckersGame
         */
         public Board Copy()
         {
-            Board copiedBoard = new Board();
+            Board copiedBoard = new Board(topColor, bottomColor);
             for(int row = 0; row < SIZE; row++)
             {
                 for(int col = 0; col < SIZE; col++)
@@ -324,6 +350,8 @@ namespace CheckersGame
             }
             copiedBoard.whitePieces = this.whitePieces;
             copiedBoard.grayPieces = this.grayPieces;
+            copiedBoard.game = this.game;
+
             return copiedBoard;
         }
 
@@ -334,7 +362,7 @@ namespace CheckersGame
             {
                 return false;
             }
-            if (player.Equals(Player.MIN)) // player is human
+            if (player.Equals(Player.MIN) || (player.Equals(Player.MAX) && squares[origin.row, origin.col])) // player is human
             {
                 if (destination.row == origin.row - 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)) // regular move
                 {
@@ -410,6 +438,17 @@ namespace CheckersGame
             return this.whitePieces == 0 || this.grayPieces == 0;
         }
 
+        /*
+
+         * A method that returns the winner of the game
+         */
+        public Player GetWinner()
+        {
+            Piece computerColor = game.GetComputerColor();
+            Piece winnerColor = whitePieces == 0 ? Piece.GRAY : Piece.WHITE;
+            Player winner = winnerColor == computerColor ? Player.MAX : Player.MIN;
+            return winner;
+        }
         /*
          * A method to add one list to another
          */
