@@ -14,7 +14,8 @@ namespace CheckersGame
         private int whitePieces = 0;
         private int grayPieces = 0;
         private Game game;
-
+        private int availableCaptures = 0;
+        
         /*
          * An overloaded constructor for Copy
          */
@@ -75,9 +76,20 @@ namespace CheckersGame
             return this.whitePieces - this.grayPieces;
         }
 
-        public bool PossibleCapture ()
+        public bool CaptureOnBoard (Player player)
         {
-            throw new NotImplementedException(); // Eliana
+            for (int col = 0; col < SIZE; col++)
+            {
+                for (int row = 0; row < SIZE; row++)
+                {
+                    if (PossibleCapture(new Location(row, col), player))
+                    {
+                        return true;
+                    }
+                    
+                }
+            }
+            return false;
         }
 
         public List<Board> GetPossibleCaptures(Piece playersColor)
@@ -93,7 +105,7 @@ namespace CheckersGame
             List<Board> allmoves = new List<Board>();
             Piece playercolor = (player == Player.MIN) ? Piece.GRAY : Piece.WHITE; 
             Piece otherPlayer = (player == Player.MIN) ? Piece.WHITE : Piece.GRAY;
-            if (PossibleCapture())
+            if (CaptureOnBoard(player))
             {
                 allmoves = GetPossibleCaptures(playercolor);
             }
@@ -329,11 +341,14 @@ namespace CheckersGame
        
         public bool IsLegal(Location origin, Location destination, Player player)
         {
+            Piece currPiece = squares[destination.row, destination.col];
+            
             if (squares[origin.row, origin.col] == Piece.EMPTY || squares[destination.row, destination.col] != Piece.EMPTY)
             {
                 return false;
             }
-            if (player.Equals(Player.MIN) || (player.Equals(Player.MAX) && squares[origin.row, origin.col])) // player is human
+            
+            if (player.Equals(Player.MIN)) // player is human
             {
                 if (destination.row == origin.row + 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)) // regular move
                 {
@@ -366,38 +381,39 @@ namespace CheckersGame
             return false;
         }
 
-        public int AnotherCapture(Location currentPiece, Player player)
+        public bool PossibleCapture(Location currentPiece, Player player)
         {
-            int possibleJumps = 0; 
-            if (player.Equals(Player.MIN))
+            if (player.Equals(Player.MIN) && currentPiece.row + 2 < 7)
             {
-                if (IsLegal(currentPiece, new Location(currentPiece.col + 2, currentPiece.row + 2), player))
+                if (IsLegal(currentPiece, new Location(currentPiece.col + 2, currentPiece.row + 2), player) 
+                    && currentPiece.col + 2 < 8)
                 {
-                    possibleJumps++; // jump to right
+                    return true; // jump to right
                 }
-                if (IsLegal(currentPiece, new Location(currentPiece.col - 2, currentPiece.row + 2), player))
+                if (IsLegal(currentPiece, new Location(currentPiece.col - 2, currentPiece.row + 2), player)
+                    && currentPiece.col - 2 > 0)
                 {
-                    possibleJumps++; // jump to left
+                    return true; // jump to left
                 }
-                return possibleJumps; 
+                //return possibleJumps; 
             }
 
-            if (player.Equals(Player.MAX))
+            if (player.Equals(Player.MAX) && currentPiece.row - 2 > 0)
             {
-                if (IsLegal(currentPiece, new Location(currentPiece.col + 2, currentPiece.row - 2), player))
+                if (IsLegal(currentPiece, new Location(currentPiece.col + 2, currentPiece.row - 2), player)
+                    && currentPiece.col + 2 < 8)
                 {
-                    possibleJumps++; // jump to right
+                    return true; // jump to right
                 }
-                if (IsLegal(currentPiece, new Location(currentPiece.col - 2, currentPiece.row - 2), player))
+                if (IsLegal(currentPiece, new Location(currentPiece.col - 2, currentPiece.row - 2), player) 
+                    && currentPiece.col - 2 > 0)
                 {
-                    possibleJumps++; // jump to left
+                    return true; // jump to left
                 }
 
-                return possibleJumps;
+                return false;
             }
-            // This will check if there as opponents piece to the right or left. If its legal (with current origina and new destination, 
-            // it will see if its an option to move and will move. If it is legal, another jump is ture. If not, its false. If true, second jump will be taken
-            return possibleJumps; 
+            return false; 
         }
 
         /*

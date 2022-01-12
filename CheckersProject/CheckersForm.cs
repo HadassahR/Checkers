@@ -197,13 +197,13 @@ namespace CheckersProject
             board.MakeMove(origin, destination, color);
 
 
-            while (board.AnotherCapture(destination, player) != 0)
+            while (board.PossibleCapture(destination, player) != 0)
             {
-                if (board.AnotherCapture(destination, player) == 1)
+                if (board.PossibleCapture(destination, player) == 1)
                 {
                     // Make that move
                 }
-                else if (board.AnotherCapture(destination, player) == 2)
+                else if (board.PossibleCapture(destination, player) == 2)
                 {
                     MessageBoxManager.Yes = "Right";
                     MessageBoxManager.No = "Left";
@@ -218,7 +218,7 @@ namespace CheckersProject
                         // left jump
                     }
                 }
-                if (board.AnotherCapture(destination, player) == 0)
+                if (board.PossibleCapture(destination, player) == 0)
                 {
                     EndOfTurn();
                 }
