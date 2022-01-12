@@ -14,7 +14,6 @@ namespace CheckersGame
         private int whitePieces = 0;
         private int grayPieces = 0;
         private Game game;
-        private int availableCaptures = 0;
 
         /*
          * An overloaded constructor for Copy
@@ -82,7 +81,7 @@ namespace CheckersGame
             {
                 for (int row = 0; row < SIZE; row++)
                 {
-                    if (PossibleCapture(new Location(row, col), player))
+                    if (PieceHasAvailableCapture(new Location(row, col), player))
                     {
                         return true;
                     }
@@ -367,7 +366,8 @@ namespace CheckersGame
 
             if (player.Equals(Player.MIN) || (player.Equals(Player.MAX) && isKing(currPiece))) // player is human
             {
-                if (destination.row == origin.row + 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)) // regular move
+                if (destination.row == origin.row + 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)
+                    && !PieceHasAvailableCapture(origin, player)) // regular move
                 {
                     return true;
                 }
@@ -382,7 +382,8 @@ namespace CheckersGame
             }
             if (player.Equals(Player.MAX) || (player.Equals(Player.MIN) && isKing(currPiece))) // player is computer
             {
-                if (destination.row == origin.row - 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1))
+                if (destination.row == origin.row - 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)
+                    && !PieceHasAvailableCapture(origin, player))
                 {
                     return true;
                 }
@@ -398,37 +399,34 @@ namespace CheckersGame
             return false;
         }
 
-        public bool PossibleCapture(Location currentPiece, Player player)
+        public bool PieceHasAvailableCapture(Location origin, Player player)
         {
-            if (player.Equals(Player.MIN) && currentPiece.row + 2 < 7)
+            if (player.Equals(Player.MIN) && origin.row + 2 < 7)
             {
-                if (IsLegal(currentPiece, new Location(currentPiece.col + 2, currentPiece.row + 2), player) 
-                    && currentPiece.col + 2 < 8)
+                if (IsLegal(origin, new Location(origin.col + 2, origin.row + 2), player) 
+                    && origin.col + 2 < 8)
                 {
                     return true; // jump to right
                 }
-                if (IsLegal(currentPiece, new Location(currentPiece.col - 2, currentPiece.row + 2), player)
-                    && currentPiece.col - 2 > 0)
+                if (IsLegal(origin, new Location(origin.col - 2, origin.row + 2), player)
+                    && origin.col - 2 > 0)
                 {
                     return true; // jump to left
                 }
-                //return possibleJumps; 
             }
 
-            if (player.Equals(Player.MAX) && currentPiece.row - 2 > 0)
+            if (player.Equals(Player.MAX) && origin.row - 2 > 0)
             {
-                if (IsLegal(currentPiece, new Location(currentPiece.col + 2, currentPiece.row - 2), player)
-                    && currentPiece.col + 2 < 8)
+                if (IsLegal(origin, new Location(origin.col + 2, origin.row - 2), player)
+                    && origin.col + 2 < 8)
                 {
                     return true; // jump to right
                 }
-                if (IsLegal(currentPiece, new Location(currentPiece.col - 2, currentPiece.row - 2), player) 
-                    && currentPiece.col - 2 > 0)
+                if (IsLegal(origin, new Location(origin.col - 2, origin.row - 2), player) 
+                    && origin.col - 2 > 0)
                 {
                     return true; // jump to left
                 }
-
-                return false;
             }
             return false; 
         }
