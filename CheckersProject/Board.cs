@@ -357,7 +357,8 @@ namespace CheckersGame
         }
         public bool IsLegal(Location origin, Location destination, Player player)
         {
-            Piece currPiece = squares[destination.row, destination.col];
+            Piece currPiece = squares[origin.row, origin.col];
+            
             if (squares[origin.row, origin.col] == Piece.EMPTY ||
                 squares[destination.row, destination.col] != Piece.EMPTY)
             {
@@ -366,32 +367,40 @@ namespace CheckersGame
 
             if (player.Equals(Player.MIN) || (player.Equals(Player.MAX) && isKing(currPiece))) // player is human
             {
-                if (destination.row == origin.row + 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)
+                if (destination.row == origin.row - 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)
                     && !PieceHasAvailableCapture(origin, player)) // regular move
                 {
                     return true;
                 }
-                else if (destination.row == origin.row + 2 && destination.col == origin.col + 2 && SameColor(squares[origin.row + 1, origin.col + 1], game.GetComputerColor())) // single capture - right (Hadassah - figure out tags)
+                else if (destination.row == origin.row - 2 && destination.col == origin.col + 2 &&
+                         (player.Equals(Player.MIN) && SameColor(squares[origin.row - 1, origin.col + 1], game.GetComputerColor()) ||
+                          (player.Equals(Player.MAX) && SameColor(squares[origin.row - 1, origin.col + 1], game.GetHumanColor()))))
                 {
                     return true;
                 }
-                else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 && SameColor(squares[origin.row + 1, origin.col - 1], (game.GetComputerColor()))) // single capture - left
+                else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 && 
+                         ((player.Equals(Player.MIN) && SameColor(squares[origin.row - 1, origin.col - 1], game.GetComputerColor()) ||
+                          (player.Equals(Player.MAX) && SameColor(squares[origin.row - 1, origin.col - 1], game.GetHumanColor())))))
                 {
                     return true;
                 }
             }
             if (player.Equals(Player.MAX) || (player.Equals(Player.MIN) && isKing(currPiece))) // player is computer
             {
-                if (destination.row == origin.row - 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)
+                if (destination.row == origin.row + 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)
                     && !PieceHasAvailableCapture(origin, player))
                 {
                     return true;
                 }
-                else if (destination.row == origin.row - 2 && destination.col == origin.col + 2 && SameColor(squares[origin.row - 1, origin.col + 1], game.GetHumanColor())) // single capture - right (Hadassah - figure out tags)
+                else if (destination.row == origin.row + 2 && destination.col == origin.col + 2 
+                         (player.Equals(Player.MIN) && SameColor(squares[origin.row + 1, origin.col + 1], game.GetComputerColor()) ||
+                          (player.Equals(Player.MAX) && SameColor(squares[origin.row + 1, origin.col + 1], game.GetHumanColor()))))
                 {
                     return true;
                 }
-                else if (destination.row == origin.row - 2 && destination.col == origin.col - 2 && SameColor(squares[origin.row - 1, origin.col - 1], game.GetHumanColor())) // single capture - left
+                else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 
+                         (player.Equals(Player.MIN) && SameColor(squares[origin.row + 1, origin.col + 1], game.GetComputerColor()) ||
+                          (player.Equals(Player.MAX) && SameColor(squares[origin.row + 1, origin.col + 1], game.GetHumanColor())))))
                 {
                     return true;
                 }
@@ -401,29 +410,29 @@ namespace CheckersGame
 
         public bool PieceHasAvailableCapture(Location origin, Player player)
         {
-            if (player.Equals(Player.MIN) && origin.row + 2 < 7)
+            if (player.Equals(Player.MIN) && origin.row - 2 > 0)
             {
-                if (IsLegal(origin, new Location(origin.col + 2, origin.row + 2), player) 
+                if (IsLegal(origin, new Location(origin.col + 2, origin.row - 2), player) 
                     && origin.col + 2 < 8)
                 {
                     return true; // jump to right
                 }
-                if (IsLegal(origin, new Location(origin.col - 2, origin.row + 2), player)
-                    && origin.col - 2 > 0)
+                if (IsLegal(origin, new Location(origin.col - 2, origin.row - 2), player)
+                    && origin.col - 2 > -1)
                 {
                     return true; // jump to left
                 }
             }
 
-            if (player.Equals(Player.MAX) && origin.row - 2 > 0)
+            if (player.Equals(Player.MAX) && origin.row + 2 < 8)
             {
-                if (IsLegal(origin, new Location(origin.col + 2, origin.row - 2), player)
+                if (IsLegal(origin, new Location(origin.col + 2, origin.row + 2), player)
                     && origin.col + 2 < 8)
                 {
                     return true; // jump to right
                 }
-                if (IsLegal(origin, new Location(origin.col - 2, origin.row - 2), player) 
-                    && origin.col - 2 > 0)
+                if (IsLegal(origin, new Location(origin.col - 2, origin.row + 2), player) 
+                    && origin.col - 2 > -1)
                 {
                     return true; // jump to left
                 }
