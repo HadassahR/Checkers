@@ -9,12 +9,7 @@ namespace CheckersGame
     public class Board // Leah // 
     {
         public static readonly int SIZE = 8;
-<<<<<<< HEAD
-        Piece[,] squares; 
-        public readonly Piece topColor;
-=======
         Piece[,] squares = new Piece[SIZE, SIZE];
->>>>>>> c2ae89c9d8f73d34218a49fd6f5ba06479c4788b
         private int whitePieces = 0;
         private int grayPieces = 0;
         private Game game;
@@ -41,13 +36,9 @@ namespace CheckersGame
          */
         public Board(Button[,] buttons, Game game)
         {
-<<<<<<< HEAD
-            topColor = buttons[0, 0].Tag.Equals("GRAY") ? Piece.GRAY : Piece.WHITE;
-=======
             this.game = game;
             topColor = game.GetComputerColor();
             bottomColor = game.GetHumanColor();
->>>>>>> c2ae89c9d8f73d34218a49fd6f5ba06479c4788b
             squares = new Piece[SIZE, SIZE];
             for (int row = 0; row < SIZE; row++)
             {
