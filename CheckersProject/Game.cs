@@ -8,7 +8,7 @@ using CheckersProject;
 
 namespace CheckersProject
 {
-    class Game
+    public class Game
     {
         private Player startingPlayer;
         private Player currentPlayer;
@@ -16,11 +16,15 @@ namespace CheckersProject
         private Piece humanColor;
         private Button originButton;
         private Location originLocation;
+        private Location destinationLocation; 
         private Button destinationButton; 
         private bool originClicked;
         private bool destinationClicked; 
         private int computerScore; 
-        private int humanScore; 
+        private int humanScore;
+        private int depth; //set this based on difficulty
+        public static readonly int MIN_VALUE;
+        public static readonly int MAX_VALUE;
 
         public Game ()
         {
@@ -33,9 +37,19 @@ namespace CheckersProject
             originLocation = loc;
         }
 
+        public void SetDestinationLocation(Location loc)
+        {
+            destinationLocation = loc; 
+        }
+
         public Location GetOriginLocation()
         {
             return originLocation;
+        }
+
+        public Location GetDestinationLocation()
+        {
+            return destinationLocation; 
         }
         public void SetStartingPlayer(Player player)
         {

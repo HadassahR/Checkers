@@ -10,35 +10,45 @@ namespace CheckersGame
     {
         public static readonly int SIZE = 8;
         Piece[,] squares = new Piece[SIZE, SIZE];
-        public readonly Piece topColor;
         private int whitePieces = 0;
         private int grayPieces = 0;
         private Game game;
+        public readonly Piece topColor;
+        public readonly Piece bottomColor;
+
 
         /*
          * An overloaded constructor for Copy
          */
-        private Board()
+        private Board(Piece topColor, Piece bottomColor)
+
         {
             squares = new Piece[SIZE, SIZE];
+            this.topColor = topColor;
+            this.bottomColor = bottomColor;
         }
+
+
+        
 
         /*
          * A constructor that takes a 2d array of buttons
          */
-        public Board(Button[,] buttons)
+        public Board(Button[,] buttons, Game game)
         {
-            topColor = buttons[0, 0].Tag.Equals("gray") ? Piece.GRAY : Piece.WHITE;
+            this.game = game;
+            topColor = game.GetComputerColor();
+            bottomColor = game.GetHumanColor();
             squares = new Piece[SIZE, SIZE];
             for (int row = 0; row < SIZE; row++)
             {
                 for (int col = 0; col < SIZE; col++)
                 {
                     String square = buttons[row, col].Tag.ToString();
-                    squares[row, col] = square.Equals("white") ? Piece.WHITE :
-                        square.Equals("whiteKing") ? Piece.WHITE_KING :
-                        square.Equals("gray") ? Piece.GRAY :
-                        square.Equals("grayKing") ? Piece.GRAY_KING : Piece.EMPTY;
+                    squares[row, col] = square.Equals("WHITE") ? Piece.WHITE :
+                        square.Equals("WHITEKING") ? Piece.WHITE_KING :
+                        square.Equals("GRAY") ? Piece.GRAY :
+                        square.Equals("GRAYKING") ? Piece.GRAY_KING : Piece.EMPTY;
 
                     if (squares[row, col] == Piece.GRAY || squares[row, col] == Piece.GRAY_KING)
                     {
@@ -50,6 +60,7 @@ namespace CheckersGame
                     }
                 }
             }
+            this.game = game; 
         }
 
         /*
@@ -72,7 +83,13 @@ namespace CheckersGame
         */
         public double HeuristicValue()
         {
-            return this.whitePieces - this.grayPieces;
+            int value = 0;
+
+            Piece maxColor = topColor;
+
+            value = IsWhite(maxColor) ? whitePieces - grayPieces : grayPieces - whitePieces;
+            
+            return value;
         }
 
         public bool CaptureOnBoard(Player player)
@@ -100,37 +117,28 @@ namespace CheckersGame
         /*
          * returns a list of boards for every possible next move
          */
-        public List<Board> GetAllMoves(Player player)
+        public List<Board> GetAllMoves (Player player) 
         {
             List<Board> allmoves = new List<Board>();
-            Piece playercolor = (player == Player.MIN) ? Piece.GRAY : Piece.WHITE;
-            Piece otherPlayer = (player == Player.MIN) ? Piece.WHITE : Piece.GRAY;
-            if (CaptureOnBoard(player))
+            Piece playercolor = (player == Player.MAX) ? topColor : bottomColor; 
+            Piece otherPlayer = (player == Player.MAX) ? bottomColor : topColor;
+            for (int col = 0; col < SIZE; col++)
             {
-                allmoves = GetPossibleCaptures(playercolor);
-            }
-            else
-            {
-                for (int col = 0; col < SIZE; col++)
+                for (int row = 0; row < SIZE; row++)
                 {
-                    for (int row = 0; row < SIZE; row++)
+                    Piece piece = squares[col, row];
+                    if (!(piece == Piece.EMPTY) || SameColor(piece, otherPlayer)) //check that there is a piece of the other color there
                     {
-                        Piece piece = squares[col, row];
-                        if (!(piece == Piece.EMPTY) ||
-                            SameColor(piece, otherPlayer)) //check that there is a piece of the other color there
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            Location square = new Location(col, row);
-                            List<Board> theseMoves = MovesForThisPiece(square, otherPlayer);
-                            AddListToList(theseMoves, allmoves);
-                        }
+                        continue;
+                    }
+                    else
+                    {
+                        Location square = new Location(col, row);
+                        List<Board> theseMoves = MovesForThisPiece(square, otherPlayer);
+                        AddListToList(theseMoves, allmoves);
                     }
                 }
             }
-
             return allmoves;
         }
 
@@ -336,17 +344,18 @@ namespace CheckersGame
         */
         public Board Copy()
         {
-            Board copiedBoard = new Board();
-            for (int row = 0; row < SIZE; row++)
+            Board copiedBoard = new Board(topColor, bottomColor);
+            for(int row = 0; row < SIZE; row++)
             {
-                for (int col = 0; col < SIZE; col++)
+                for(int col = 0; col < SIZE; col++)
                 {
                     copiedBoard.squares[row, col] = this.squares[row, col];
                 }
             }
-
             copiedBoard.whitePieces = this.whitePieces;
             copiedBoard.grayPieces = this.grayPieces;
+            copiedBoard.game = this.game;
+
             return copiedBoard;
         }
 
@@ -381,6 +390,15 @@ namespace CheckersGame
                 else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 && 
                          ((player.Equals(Player.MIN) && SameColor(squares[origin.row - 1, origin.col - 1], game.GetComputerColor()) ||
                           (player.Equals(Player.MAX) && SameColor(squares[origin.row - 1, origin.col - 1], game.GetHumanColor())))))
+                if (destination.row == origin.row - 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)) // regular move
+                {
+                    return true;
+                }
+                else if (destination.row == origin.row - 2 && destination.col == origin.col + 2 && SameColor(squares[origin.row + 1, origin.col + 1], game.GetComputerColor())) // single capture - right (Hadassah - figure out tags)
+                {
+                    return true;
+                }
+                else if (destination.row == origin.row - 2 && destination.col == origin.col - 2 && SameColor(squares[origin.row + 1, origin.col - 1], (game.GetComputerColor()))) // single capture - left
                 {
                     return true;
                 }
@@ -392,15 +410,24 @@ namespace CheckersGame
                 {
                     return true;
                 }
-                else if (destination.row == origin.row + 2 && destination.col == origin.col + 2 
+                else if (destination.row == origin.row + 2 && destination.col == origin.col + 2 &&
                          (player.Equals(Player.MIN) && SameColor(squares[origin.row + 1, origin.col + 1], game.GetComputerColor()) ||
                           (player.Equals(Player.MAX) && SameColor(squares[origin.row + 1, origin.col + 1], game.GetHumanColor()))))
                 {
                     return true;
                 }
-                else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 
+                else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 &&
                          (player.Equals(Player.MIN) && SameColor(squares[origin.row + 1, origin.col + 1], game.GetComputerColor()) ||
-                          (player.Equals(Player.MAX) && SameColor(squares[origin.row + 1, origin.col + 1], game.GetHumanColor())))))
+                          (player.Equals(Player.MAX) && SameColor(squares[origin.row + 1, origin.col + 1], game.GetHumanColor()))))
+                if (destination.row == origin.row + 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1))
+                {
+                    return true;
+                }
+                else if (destination.row == origin.row + 2 && destination.col == origin.col + 2 && SameColor(squares[origin.row - 1, origin.col + 1], game.GetHumanColor()))
+                {
+                    return true;
+                }
+                else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 && SameColor(squares[origin.row - 1, origin.col - 1], game.GetHumanColor())) // single capture - left
                 {
                     return true;
                 }
@@ -449,6 +476,17 @@ namespace CheckersGame
             return this.whitePieces == 0 || this.grayPieces == 0;
         }
 
+        /*
+
+         * A method that returns the winner of the game
+         */
+        public Player GetWinner()
+        {
+            Piece computerColor = game.GetComputerColor();
+            Piece winnerColor = whitePieces == 0 ? Piece.GRAY : Piece.WHITE;
+            Player winner = winnerColor == computerColor ? Player.MAX : Player.MIN;
+            return winner;
+        }
         /*
          * A method to add one list to another
          */

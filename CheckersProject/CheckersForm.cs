@@ -10,8 +10,8 @@ namespace CheckersProject
     {
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CheckersForm));
         Button[,] buttons;
-        Board board;
-        Game game;
+        public Board board;
+        public Game game;
         private string emptySquare = "NONE";
         private string whiteSquare = "WHITE";
         private string graySquare = "GRAY"; 
@@ -109,14 +109,15 @@ namespace CheckersProject
                     }
                 }
             }
-            board = new Board(buttons);
+            board = new Board(buttons, game);
         }
         private void SquareOnClick(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
-            bool pieceOfCurrentPlayer = game.GetCurrentPlayer().Equals(Player.MAX) && game.GetComputerColor().ToString().Equals(btn.Tag.ToString().ToUpper()) || (game.GetCurrentPlayer().Equals(Player.MIN) && game.GetHumanColor().ToString().Equals(btn.Tag.ToString().ToUpper()) ? true : false);
+            bool pieceOfCurrentPlayer = game.GetCurrentPlayer().Equals(Player.MAX) && game.GetComputerColor().ToString().Equals(btn.Tag.ToString()) || (game.GetCurrentPlayer().Equals(Player.MIN) && game.GetHumanColor().ToString().Equals(btn.Tag.ToString()) ? true : false);
             bool emptySquare = btn.Tag.Equals(this.emptySquare);
 
+            // This finds location of current button
             Location buttonLocation = null;
             for (var r = 0; r < BOARD_SIZE; r++)
             {
@@ -130,6 +131,7 @@ namespace CheckersProject
                 }
             }
 
+            // If an origin wasn't clicked, the selected button is the origin
             if (!emptySquare && pieceOfCurrentPlayer && !game.IsOriginClicked())
             {
                 btn.BackColor = Color.Cyan;
@@ -138,6 +140,7 @@ namespace CheckersProject
                 game.SetOriginClicked(btn, true);
                 game.SetOriginLocation(buttonLocation);
             }
+            // Otherwise, selected button is the destination, check if it's a legal move. If it is, allow "move"
             else if (emptySquare && !game.IsDestinationClicked())
             {
                 if (board.IsLegal(game.GetOriginLocation(), buttonLocation, game.GetCurrentPlayer()))
@@ -146,48 +149,35 @@ namespace CheckersProject
                     chooseDestination.Visible = false;
                     cancel.Visible = true;
                     game.SetDestinationClicked(btn, true);
+                    game.SetDestinationLocation(buttonLocation); 
+                    move.Visible = true; 
                 }
                 else
                 {
                     MessageBox.Show("That move is not legal");
                 }
             }
-
-            if (game.IsOriginClicked() && game.IsDestinationClicked())
-            {
-                move.Visible = true;
-            }
         }
         private void MoveClick(object sender, EventArgs e)
         {
-            Location origin = null;
-            Location destination = null; 
-            for (var r = 0; r < BOARD_SIZE; r++)
-            {
-                for (var c = 0; c < BOARD_SIZE; c++)
-                {
-                    if (buttons[r, c] == game.GetOriginButton())
-                    {
-                        origin = new Location(r, c);
-                    } else if (buttons[r, c] == game.GetDestinationButton())
-                    {
-                        destination = new Location(r, c); 
-                    }
-                }
-            }
-            Piece color = game.GetCurrentPlayer().Equals(Player.MIN) ? game.GetHumanColor() : game.GetComputerColor(); 
+            Piece color = game.GetCurrentPlayer().Equals(Player.MIN) ? game.GetHumanColor() : game.GetComputerColor();
 
-            if (board.IsLegal(origin, destination, game.GetCurrentPlayer()))
+            if (MoveChecker(game.GetCurrentPlayer(), color, game.GetOriginLocation(), game.GetDestinationLocation()))
             {
-                MoveChecker(game.GetCurrentPlayer(), color, origin, destination);
-            }
+                ResetRound();
+                EndOfTurn();
+                if (board.GameOver())
+                {
+                    EndGame();
+                }
+            } 
             else
             {
-                MessageBox.Show("Illegal Move");
-                ResetRound(); 
+                MessageBox.Show("Something went wrong :(");
             }
+            
         }
-        private void MoveChecker(Player player, Piece color, Location origin, Location destination)
+        private bool MoveChecker(Player player, Piece color, Location origin, Location destination)
         {
             buttons[destination.row, destination.col].Tag = buttons[origin.row, origin.col].Tag;
             buttons[destination.row, destination.col].BackgroundImage = color == Piece.GRAY ? Properties.Resources.checkerWhite : Properties.Resources.checkerGray; 
@@ -195,13 +185,14 @@ namespace CheckersProject
             buttons[origin.row, origin.col].BackgroundImage = Properties.Resources.checkerNone;
 
             board.MakeMove(origin, destination, color);
-
+            game.GetOriginButton().BackColor = Color.Red;
+            game.GetDestinationButton().BackColor = Color.Red;
 
             while (board.PieceHasAvailableCapture(destination, player) != 0)
             {
                 if (board.PieceHasAvailableCapture(destination, player) == 1)
                 {
-                    // Make that move
+                    // Make the available move
                 }
                 else if (board.PieceHasAvailableCapture(destination, player) == 2)
                 {
@@ -211,24 +202,19 @@ namespace CheckersProject
 
                     if (result == DialogResult.Yes)
                     {
-                        // right jump
+                        // Make right jump
                     }
                     else
                     {
-                        // left jump
+                        // Make left jump
                     }
                 }
                 if (board.PieceHasAvailableCapture(destination, player) == 0)
                 {
-                    EndOfTurn();
+                    return true;
                 }
             }
-
-            if (board.GameOver())
-            {
-                EndGame();
-            }
-
+            return true;
         }
         private void EndOfTurn()
         {
@@ -242,21 +228,21 @@ namespace CheckersProject
         }
         private void ResetRound()
         {
+            if (game.IsOriginClicked())
+            {
+                game.GetOriginButton().BackColor = Color.Red;
+                game.SetOriginClicked(null, false);
+                game.SetOriginLocation(null);
+            }
+            if (game.IsDestinationClicked())
+            {
+                game.GetDestinationButton().BackColor = Color.Red;
+                game.SetDestinationClicked(null, false);
+                game.SetDestinationLocation(null);
+            }
             cancel.Visible = false;
             move.Visible = false;
             chooseDestination.Visible = false;
-            if (!game.IsOriginClicked().Equals(null))
-            {
-                game.GetOriginButton().BackColor = Color.Red;
-            }
-
-            if (!game.IsDestinationClicked().Equals(null))
-            {
-                game.GetDestinationButton().BackColor = Color.Red;
-
-            }
-            game.SetOriginClicked(null, false);
-            game.SetDestinationClicked(null, false);
         }
         private void UpdateTurn(Player player)
         {
@@ -264,7 +250,7 @@ namespace CheckersProject
         }
         private void EndGame()
         {
-            throw new NotImplementedException();
+            currentTurn.Text = "Game Over!"; 
         }
     }
 }
