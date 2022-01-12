@@ -15,7 +15,7 @@ namespace CheckersGame
         private int grayPieces = 0;
         private Game game;
         private int availableCaptures = 0;
-        
+
         /*
          * An overloaded constructor for Copy
          */
@@ -76,7 +76,7 @@ namespace CheckersGame
             return this.whitePieces - this.grayPieces;
         }
 
-        public bool CaptureOnBoard (Player player)
+        public bool CaptureOnBoard(Player player)
         {
             for (int col = 0; col < SIZE; col++)
             {
@@ -86,9 +86,10 @@ namespace CheckersGame
                     {
                         return true;
                     }
-                    
+
                 }
             }
+
             return false;
         }
 
@@ -100,10 +101,10 @@ namespace CheckersGame
         /*
          * returns a list of boards for every possible next move
          */
-        public List<Board> GetAllMoves (Player player) 
+        public List<Board> GetAllMoves(Player player)
         {
             List<Board> allmoves = new List<Board>();
-            Piece playercolor = (player == Player.MIN) ? Piece.GRAY : Piece.WHITE; 
+            Piece playercolor = (player == Player.MIN) ? Piece.GRAY : Piece.WHITE;
             Piece otherPlayer = (player == Player.MIN) ? Piece.WHITE : Piece.GRAY;
             if (CaptureOnBoard(player))
             {
@@ -116,7 +117,8 @@ namespace CheckersGame
                     for (int row = 0; row < SIZE; row++)
                     {
                         Piece piece = squares[col, row];
-                        if (!(piece == Piece.EMPTY) || SameColor(piece, otherPlayer)) //check that there is a piece of the other color there
+                        if (!(piece == Piece.EMPTY) ||
+                            SameColor(piece, otherPlayer)) //check that there is a piece of the other color there
                         {
                             continue;
                         }
@@ -129,6 +131,7 @@ namespace CheckersGame
                     }
                 }
             }
+
             return allmoves;
         }
 
@@ -156,6 +159,7 @@ namespace CheckersGame
                 List<Board> movesAbove = CheckAboveOrBelow(square, piece, true);
                 AddListToList(movesAbove, theseMoves);
             }
+
             return theseMoves;
         }
 
@@ -169,7 +173,7 @@ namespace CheckersGame
             int col = location.col;
             int row = location.row;
             bool firstRow = (row == 0);
-            bool lastRow = (row == SIZE-1);
+            bool lastRow = (row == SIZE - 1);
             if (!(above && firstRow) && !(!above && lastRow)) //not first or lastrow
             {
                 bool firstCol = false;
@@ -178,16 +182,18 @@ namespace CheckersGame
                 {
                     firstCol = true;
                 }
+
                 if (row == SIZE - 1)
                 {
                     lastCol = true;
                 }
+
                 int checkingRow = above ? row - 1 : row + 1;
-                Piece left = firstCol ? Piece.NULL : squares[checkingRow, col -1];
+                Piece left = firstCol ? Piece.NULL : squares[checkingRow, col - 1];
                 Piece right = lastCol ? Piece.NULL : squares[checkingRow, col + 1];
                 if (!firstCol) //check left side
                 {
-                    if (left != Piece.NULL) 
+                    if (left != Piece.NULL)
                     {
                         Location moveto = new Location(col - 1, checkingRow);
                         moves.Add(MakeMoveCopy(location, moveto, playerPiece));
@@ -207,13 +213,14 @@ namespace CheckersGame
                     //    }
                     //}
                 }
+
                 if (!lastCol) //check right side
                 {
-                    if (right != Piece.NULL) 
+                    if (right != Piece.NULL)
                     {
                         Location moveto = new Location(col + 1, checkingRow);
-                        moves.Add(MakeMoveCopy(location, moveto, playerPiece)); 
-                     }
+                        moves.Add(MakeMoveCopy(location, moveto, playerPiece));
+                    }
                     //else
                     //{
                     //    int jumpingRow = above ? row - 2 : row + 2;
@@ -230,6 +237,7 @@ namespace CheckersGame
                     //}
                 }
             }
+
             return moves;
         }
 
@@ -248,6 +256,7 @@ namespace CheckersGame
             {
                 movedBoard.squares[ending.row, ending.col] = color;
             }
+
             return movedBoard;
         }
 
@@ -266,12 +275,12 @@ namespace CheckersGame
             {
                 squares[ending.row, ending.col] = color;
             }
-            
+
         }
-        
-       /*
-       * checks if a jump is possible and returns a copy of the board with the new move if it is
-       */
+
+        /*
+        * checks if a jump is possible and returns a copy of the board with the new move if it is
+        */
         public Board MakeJumpCopy(Location starting, Location middle, Location end, Piece startingPiece)
         {
             Board jumpedBoard = null;
@@ -283,7 +292,7 @@ namespace CheckersGame
                 jumpedBoard.squares[starting.row, starting.col] = Piece.EMPTY;
                 jumpedBoard.squares[middle.row, middle.col] = Piece.EMPTY;
 
-                if (end.row == 0 || end.row == SIZE-1)
+                if (end.row == 0 || end.row == SIZE - 1)
                 {
                     jumpedBoard.squares[end.row, end.col] = GetKing(startingPiece);
                 }
@@ -291,8 +300,10 @@ namespace CheckersGame
                 {
                     jumpedBoard.squares[end.row, end.col] = startingPiece;
                 }
+
                 jumpedBoard.DecrementPieces(startingPiece);
             }
+
             return jumpedBoard;
         }
 
@@ -316,6 +327,7 @@ namespace CheckersGame
                 {
                     squares[end.row, end.col] = startingPiece;
                 }
+
                 DecrementPieces(startingPiece);
             }
         }
@@ -326,29 +338,34 @@ namespace CheckersGame
         public Board Copy()
         {
             Board copiedBoard = new Board();
-            for(int row = 0; row < SIZE; row++)
+            for (int row = 0; row < SIZE; row++)
             {
-                for(int col = 0; col < SIZE; col++)
+                for (int col = 0; col < SIZE; col++)
                 {
                     copiedBoard.squares[row, col] = this.squares[row, col];
                 }
             }
+
             copiedBoard.whitePieces = this.whitePieces;
             copiedBoard.grayPieces = this.grayPieces;
             return copiedBoard;
         }
 
-       
+
+        public bool isKing(Piece piece)
+        {
+            return piece.Equals(Piece.GRAY_KING) || piece.Equals(Piece.WHITE_KING);
+        }
         public bool IsLegal(Location origin, Location destination, Player player)
         {
             Piece currPiece = squares[destination.row, destination.col];
-            
-            if (squares[origin.row, origin.col] == Piece.EMPTY || squares[destination.row, destination.col] != Piece.EMPTY)
+            if (squares[origin.row, origin.col] == Piece.EMPTY ||
+                squares[destination.row, destination.col] != Piece.EMPTY)
             {
                 return false;
             }
-            
-            if (player.Equals(Player.MIN)) // player is human
+
+            if (player.Equals(Player.MIN) || (player.Equals(Player.MAX) && isKing(currPiece))) // player is human
             {
                 if (destination.row == origin.row + 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)) // regular move
                 {
@@ -363,7 +380,7 @@ namespace CheckersGame
                     return true;
                 }
             }
-            if (player.Equals(Player.MAX)) // player is computer
+            if (player.Equals(Player.MAX) || (player.Equals(Player.MIN) && isKing(currPiece))) // player is computer
             {
                 if (destination.row == origin.row - 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1))
                 {
