@@ -188,13 +188,13 @@ namespace CheckersProject
             game.GetOriginButton().BackColor = Color.Red;
             game.GetDestinationButton().BackColor = Color.Red;
 
-            while (board.AnotherCapture(destination, player) != 0)
+            while (board.PieceHasAvailableCapture(destination, player) != 0)
             {
-                if (board.AnotherCapture(destination, player) == 1)
+                if (board.PieceHasAvailableCapture(destination, player) == 1)
                 {
                     // Make the available move
                 }
-                else if (board.AnotherCapture(destination, player) == 2)
+                else if (board.PieceHasAvailableCapture(destination, player) == 2)
                 {
                     MessageBoxManager.Yes = "Right";
                     MessageBoxManager.No = "Left";
@@ -209,7 +209,7 @@ namespace CheckersProject
                         // Make left jump
                     }
                 }
-                if (board.AnotherCapture(destination, player) == 0)
+                if (board.PieceHasAvailableCapture(destination, player) == 0)
                 {
                     return true;
                 }

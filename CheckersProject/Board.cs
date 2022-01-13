@@ -92,9 +92,21 @@ namespace CheckersGame
             return value;
         }
 
-        public bool PossibleCapture ()
+        public bool CaptureOnBoard(Player player)
         {
-            throw new NotImplementedException(); // Eliana
+            for (int col = 0; col < SIZE; col++)
+            {
+                for (int row = 0; row < SIZE; row++)
+                {
+                    if (PieceHasAvailableCapture(new Location(row, col), player))
+                    {
+                        return true;
+                    }
+
+                }
+            }
+
+            return false;
         }
 
         public List<Board> GetPossibleCaptures(Piece playersColor)
@@ -111,27 +123,19 @@ namespace CheckersGame
             Piece playercolor = (player == Player.MAX) ? topColor : bottomColor; 
             Piece otherPlayer = (player == Player.MAX) ? bottomColor : topColor;
             for (int col = 0; col < SIZE; col++)
-
             {
-                allmoves = GetPossibleCaptures(playercolor);
-            }
-            else
-            {
-                for (int col = 0; col < SIZE; col++)
+                for (int row = 0; row < SIZE; row++)
                 {
-                    for (int row = 0; row < SIZE; row++)
+                    Piece piece = squares[col, row];
+                    if (!(piece == Piece.EMPTY) || SameColor(piece, otherPlayer)) //check that there is a piece of the other color there
                     {
-                        Piece piece = squares[col, row];
-                        if (!(piece == Piece.EMPTY) || SameColor(piece, otherPlayer)) //check that there is a piece of the other color there
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            Location square = new Location(col, row);
-                            List<Board> theseMoves = MovesForThisPiece(square, otherPlayer);
-                            AddListToList(theseMoves, allmoves);
-                        }
+                        continue;
+                    }
+                    else
+                    {
+                        Location square = new Location(col, row);
+                        List<Board> theseMoves = MovesForThisPiece(square, otherPlayer);
+                        AddListToList(theseMoves, allmoves);
                     }
                 }
             }
@@ -162,6 +166,7 @@ namespace CheckersGame
                 List<Board> movesAbove = CheckAboveOrBelow(square, piece, true);
                 AddListToList(movesAbove, theseMoves);
             }
+
             return theseMoves;
         }
 
@@ -175,7 +180,7 @@ namespace CheckersGame
             int col = location.col;
             int row = location.row;
             bool firstRow = (row == 0);
-            bool lastRow = (row == SIZE-1);
+            bool lastRow = (row == SIZE - 1);
             if (!(above && firstRow) && !(!above && lastRow)) //not first or lastrow
             {
                 bool firstCol = false;
@@ -184,16 +189,18 @@ namespace CheckersGame
                 {
                     firstCol = true;
                 }
+
                 if (row == SIZE - 1)
                 {
                     lastCol = true;
                 }
+
                 int checkingRow = above ? row - 1 : row + 1;
-                Piece left = firstCol ? Piece.NULL : squares[checkingRow, col -1];
+                Piece left = firstCol ? Piece.NULL : squares[checkingRow, col - 1];
                 Piece right = lastCol ? Piece.NULL : squares[checkingRow, col + 1];
                 if (!firstCol) //check left side
                 {
-                    if (left != Piece.NULL) 
+                    if (left != Piece.NULL)
                     {
                         Location moveto = new Location(col - 1, checkingRow);
                         moves.Add(MakeMoveCopy(location, moveto, playerPiece));
@@ -213,13 +220,14 @@ namespace CheckersGame
                     //    }
                     //}
                 }
+
                 if (!lastCol) //check right side
                 {
-                    if (right != Piece.NULL) 
+                    if (right != Piece.NULL)
                     {
                         Location moveto = new Location(col + 1, checkingRow);
-                        moves.Add(MakeMoveCopy(location, moveto, playerPiece)); 
-                     }
+                        moves.Add(MakeMoveCopy(location, moveto, playerPiece));
+                    }
                     //else
                     //{
                     //    int jumpingRow = above ? row - 2 : row + 2;
@@ -236,6 +244,7 @@ namespace CheckersGame
                     //}
                 }
             }
+
             return moves;
         }
 
@@ -254,6 +263,7 @@ namespace CheckersGame
             {
                 movedBoard.squares[ending.row, ending.col] = color;
             }
+
             return movedBoard;
         }
 
@@ -272,12 +282,12 @@ namespace CheckersGame
             {
                 squares[ending.row, ending.col] = color;
             }
-            
+
         }
-        
-       /*
-       * checks if a jump is possible and returns a copy of the board with the new move if it is
-       */
+
+        /*
+        * checks if a jump is possible and returns a copy of the board with the new move if it is
+        */
         public Board MakeJumpCopy(Location starting, Location middle, Location end, Piece startingPiece)
         {
             Board jumpedBoard = null;
@@ -289,7 +299,7 @@ namespace CheckersGame
                 jumpedBoard.squares[starting.row, starting.col] = Piece.EMPTY;
                 jumpedBoard.squares[middle.row, middle.col] = Piece.EMPTY;
 
-                if (end.row == 0 || end.row == SIZE-1)
+                if (end.row == 0 || end.row == SIZE - 1)
                 {
                     jumpedBoard.squares[end.row, end.col] = GetKing(startingPiece);
                 }
@@ -297,8 +307,10 @@ namespace CheckersGame
                 {
                     jumpedBoard.squares[end.row, end.col] = startingPiece;
                 }
+
                 jumpedBoard.DecrementPieces(startingPiece);
             }
+
             return jumpedBoard;
         }
 
@@ -322,6 +334,7 @@ namespace CheckersGame
                 {
                     squares[end.row, end.col] = startingPiece;
                 }
+
                 DecrementPieces(startingPiece);
             }
         }
@@ -346,15 +359,37 @@ namespace CheckersGame
             return copiedBoard;
         }
 
-       
+
+        public bool isKing(Piece piece)
+        {
+            return piece.Equals(Piece.GRAY_KING) || piece.Equals(Piece.WHITE_KING);
+        }
         public bool IsLegal(Location origin, Location destination, Player player)
         {
-            if (squares[origin.row, origin.col] == Piece.EMPTY || squares[destination.row, destination.col] != Piece.EMPTY)
+            Piece currPiece = squares[origin.row, origin.col];
+            
+            if (squares[origin.row, origin.col] == Piece.EMPTY ||
+                squares[destination.row, destination.col] != Piece.EMPTY)
             {
                 return false;
             }
-            if (player.Equals(Player.MIN) || (player.Equals(Player.MAX) && squares[origin.row, origin.col])) // player is human
+
+            if (player.Equals(Player.MIN) || (player.Equals(Player.MAX) && isKing(currPiece))) // player is human
             {
+                if (destination.row == origin.row - 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)
+                    && !PieceHasAvailableCapture(origin, player)) // regular move
+                {
+                    return true;
+                }
+                else if (destination.row == origin.row - 2 && destination.col == origin.col + 2 &&
+                         (player.Equals(Player.MIN) && SameColor(squares[origin.row - 1, origin.col + 1], game.GetComputerColor()) ||
+                          (player.Equals(Player.MAX) && SameColor(squares[origin.row - 1, origin.col + 1], game.GetHumanColor()))))
+                {
+                    return true;
+                }
+                else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 && 
+                         ((player.Equals(Player.MIN) && SameColor(squares[origin.row - 1, origin.col - 1], game.GetComputerColor()) ||
+                          (player.Equals(Player.MAX) && SameColor(squares[origin.row - 1, origin.col - 1], game.GetHumanColor())))))
                 if (destination.row == origin.row - 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)) // regular move
                 {
                     return true;
@@ -368,13 +403,27 @@ namespace CheckersGame
                     return true;
                 }
             }
-            if (player.Equals(Player.MAX)) // player is computer
+            if (player.Equals(Player.MAX) || (player.Equals(Player.MIN) && isKing(currPiece))) // player is computer
             {
+                if (destination.row == origin.row + 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1)
+                    && !PieceHasAvailableCapture(origin, player))
+                {
+                    return true;
+                }
+                else if (destination.row == origin.row + 2 && destination.col == origin.col + 2 &&
+                         (player.Equals(Player.MIN) && SameColor(squares[origin.row + 1, origin.col + 1], game.GetComputerColor()) ||
+                          (player.Equals(Player.MAX) && SameColor(squares[origin.row + 1, origin.col + 1], game.GetHumanColor()))))
+                {
+                    return true;
+                }
+                else if (destination.row == origin.row + 2 && destination.col == origin.col - 2 &&
+                         (player.Equals(Player.MIN) && SameColor(squares[origin.row + 1, origin.col + 1], game.GetComputerColor()) ||
+                          (player.Equals(Player.MAX) && SameColor(squares[origin.row + 1, origin.col + 1], game.GetHumanColor()))))
                 if (destination.row == origin.row + 1 && (destination.col == origin.col - 1 || destination.col == origin.col + 1))
                 {
                     return true;
                 }
-                else if (destination.row == origin.row + 2 && destination.col == origin.col + 2 && SameColor(squares[origin.row - 1, origin.col + 1], game.GetHumanColor())) // single capture - right (Hadassah - figure out tags)
+                else if (destination.row == origin.row + 2 && destination.col == origin.col + 2 && SameColor(squares[origin.row - 1, origin.col + 1], game.GetHumanColor()))
                 {
                     return true;
                 }
@@ -386,38 +435,36 @@ namespace CheckersGame
             return false;
         }
 
-        public int AnotherCapture(Location currentPiece, Player player)
+        public bool PieceHasAvailableCapture(Location origin, Player player)
         {
-            int possibleJumps = 0; 
-            if (player.Equals(Player.MIN))
+            if (player.Equals(Player.MIN) && origin.row - 2 > 0)
             {
-                if (IsLegal(currentPiece, new Location(currentPiece.col + 2, currentPiece.row + 2), player))
+                if (IsLegal(origin, new Location(origin.col + 2, origin.row - 2), player) 
+                    && origin.col + 2 < 8)
                 {
-                    possibleJumps++; // jump to right
+                    return true; // jump to right
                 }
-                if (IsLegal(currentPiece, new Location(currentPiece.col - 2, currentPiece.row + 2), player))
+                if (IsLegal(origin, new Location(origin.col - 2, origin.row - 2), player)
+                    && origin.col - 2 > -1)
                 {
-                    possibleJumps++; // jump to left
+                    return true; // jump to left
                 }
-                return possibleJumps; 
             }
 
-            if (player.Equals(Player.MAX))
+            if (player.Equals(Player.MAX) && origin.row + 2 < 8)
             {
-                if (IsLegal(currentPiece, new Location(currentPiece.col + 2, currentPiece.row - 2), player))
+                if (IsLegal(origin, new Location(origin.col + 2, origin.row + 2), player)
+                    && origin.col + 2 < 8)
                 {
-                    possibleJumps++; // jump to right
+                    return true; // jump to right
                 }
-                if (IsLegal(currentPiece, new Location(currentPiece.col - 2, currentPiece.row - 2), player))
+                if (IsLegal(origin, new Location(origin.col - 2, origin.row + 2), player) 
+                    && origin.col - 2 > -1)
                 {
-                    possibleJumps++; // jump to left
+                    return true; // jump to left
                 }
-
-                return possibleJumps;
             }
-            // This will check if there as opponents piece to the right or left. If its legal (with current origina and new destination, 
-            // it will see if its an option to move and will move. If it is legal, another jump is ture. If not, its false. If true, second jump will be taken
-            return possibleJumps; 
+            return false; 
         }
 
         /*
