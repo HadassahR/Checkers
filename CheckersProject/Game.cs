@@ -23,8 +23,8 @@ namespace CheckersProject
         private int computerScore; 
         private int humanScore;
         private int depth; //set this based on difficulty
-        public static readonly int MIN_VALUE;
-        public static readonly int MAX_VALUE;
+        public static readonly int MIN_VALUE = -1;
+        public static readonly int MAX_VALUE = 1;
 
         public Game ()
         {
@@ -127,5 +127,14 @@ namespace CheckersProject
             return this.humanScore.ToString(); 
         }
 
+        public void SetDepth(int depth)
+        {
+            this.depth = depth; 
+        }
+
+        public int GetDepth()
+        {
+            return this.depth; 
+        }
     }
 }
