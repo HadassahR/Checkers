@@ -108,14 +108,14 @@ namespace CheckersProject
                     }
                     else if (squares[row, col] == Piece.WHITE)
                     {
-                        buttons[row, col].BackgroundImage = Properties.Resources.checkerGray;
-                        buttons[row, col].Tag = graySquare;
+                        buttons[row, col].BackgroundImage = Properties.Resources.checkerWhite;
+                        buttons[row, col].Tag = whiteSquare;
                         buttons[row, col].BackgroundImageLayout = ImageLayout.Stretch;
                     } 
                     else if (squares[row, col] == Piece.GRAY)
                     {
                         buttons[row, col].BackgroundImage = Properties.Resources.checkerWhite;
-                        buttons[row, col].Tag = whiteSquare;
+                        buttons[row, col].Tag = graySquare;
                         buttons[row, col].BackgroundImageLayout = ImageLayout.Stretch;
                     } 
                     else if (squares[row, col] == Piece.WHITE_KING)
