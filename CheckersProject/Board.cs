@@ -90,9 +90,9 @@ namespace CheckersGame
 
         public bool CaptureOnBoard(Player player)
         {
-            for (int col = 0; col < SIZE; col++)
+            for (int row = 0; row < SIZE; row++)
             {
-                for (int row = 0; row < SIZE; row++)
+                for (int col = 0; col < SIZE; col++)
                 {
                     if (PieceHasAvailableCapture(new Location(row, col), player))
                     {
@@ -107,7 +107,65 @@ namespace CheckersGame
 
         public List<Board> GetPossibleCaptures(Piece playersColor)
         {
-            throw new NotImplementedException();
+            Player player = playersColor == topColor ? Player.MAX : Player.MIN;
+            List<Board> captures = new List<Board>();
+            for (int row = 0; row < SIZE; row++)
+            {
+                for (int col = 0; col < SIZE; col++)
+                {
+                    if (squares[row, col] == playersColor)
+                    {
+                        Location pieceLocation = new Location(row, col);
+                        if (PieceHasAvailableCapture(pieceLocation, player))
+                        {
+                            AddListToList(GetCapturesForPiece(player, playersColor, pieceLocation), captures);
+                        }
+                    }
+                }
+            }
+
+            return captures;
+        }
+
+        public List<Board> GetCapturesForPiece(Player player, Piece startingPiece, Location origin)
+        { 
+            List<Board> captures = new List<Board>();
+            if (player.Equals(Player.MIN) && origin.row - 2 > 0)
+            {
+                if (IsLegal(origin, new Location(origin.row - 2, origin.col + 2), player)
+                    && origin.col + 2 < 8)
+                {
+                    Location middle = new Location(origin.row - 1, origin.col + 1);
+                    Location end = new Location(origin.row - 2, origin.col + 2);
+                    captures.Add(MakeJumpCopy(origin, middle, end, startingPiece)); // jump to right
+                }
+                if (IsLegal(origin, new Location(origin.row - 2, origin.col - 2), player)
+                    && origin.col - 2 > -1)
+                {
+                    Location middle = new Location(origin.row - 1, origin.col - 1);
+                    Location end = new Location(origin.row - 2, origin.col - 2);
+                    captures.Add(MakeJumpCopy(origin, middle, end, startingPiece)); // jump to left
+                }
+            }
+
+            if (player.Equals(Player.MAX) && origin.row + 2 < 8)
+            {
+                if (IsLegal(origin, new Location(origin.row + 2, origin.col + 2), player)
+                    && origin.col + 2 < 8)
+                {
+                    Location middle = new Location(origin.row + 1, origin.col + 1);
+                    Location end = new Location(origin.row + 2, origin.col + 2);
+                    captures.Add(MakeJumpCopy(origin, middle, end, startingPiece)); // jump to right
+                }
+                if (IsLegal(origin, new Location(origin.row + 2, origin.col - 2), player)
+                    && origin.col - 2 > -1)
+                {
+                    Location middle = new Location(origin.row + 1, origin.col - 1);
+                    Location end = new Location(origin.row + 2, origin.col - 2);
+                    captures.Add(MakeJumpCopy(origin, middle, end, startingPiece)); ; // jump to left
+                }
+            }
+            return captures;
         }
 
         /*
@@ -118,20 +176,27 @@ namespace CheckersGame
             List<Board> allmoves = new List<Board>();
             Piece playercolor = (player == Player.MAX) ? topColor : bottomColor; 
             Piece otherPlayer = (player == Player.MAX) ? bottomColor : topColor;
-            for (int row = 0; row < SIZE; row++)
+            if (CaptureOnBoard(player))
             {
-                for (int col = 0; col < SIZE; col++)
+                allmoves = GetPossibleCaptures(playercolor);
+            }
+            else
+            {
+                for (int row = 0; row < SIZE; row++)
                 {
-                    Piece piece = squares[row, col];
-                    if ((piece == Piece.EMPTY) || SameColor(piece, otherPlayer)) //check that there is a piece of the other color there
+                    for (int col = 0; col < SIZE; col++)
                     {
-                        continue;
-                    }
-                    else
-                    {
-                        Location square = new Location(row, col);
-                        List<Board> theseMoves = MovesForThisPiece(square, otherPlayer);
-                        AddListToList(theseMoves, allmoves);
+                        Piece piece = squares[row, col];
+                        if ((piece == Piece.EMPTY) || SameColor(piece, otherPlayer)) //check that there is a piece of the other color there
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            Location square = new Location(row, col);
+                            List<Board> theseMoves = MovesForThisPiece(square, otherPlayer);
+                            AddListToList(theseMoves, allmoves);
+                        }
                     }
                 }
             }
