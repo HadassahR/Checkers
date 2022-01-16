@@ -21,15 +21,11 @@ namespace CheckersGame
          * An overloaded constructor for Copy
          */
         private Board(Piece topColor, Piece bottomColor)
-
         {
             squares = new Piece[SIZE, SIZE];
             this.topColor = topColor;
             this.bottomColor = bottomColor;
         }
-
-
-        
 
         /*
          * A constructor that takes a 2d array of buttons
@@ -122,18 +118,18 @@ namespace CheckersGame
             List<Board> allmoves = new List<Board>();
             Piece playercolor = (player == Player.MAX) ? topColor : bottomColor; 
             Piece otherPlayer = (player == Player.MAX) ? bottomColor : topColor;
-            for (int col = 0; col < SIZE; col++)
+            for (int row = 0; row < SIZE; row++)
             {
-                for (int row = 0; row < SIZE; row++)
+                for (int col = 0; col < SIZE; col++)
                 {
-                    Piece piece = squares[col, row];
-                    if (!(piece == Piece.EMPTY) || SameColor(piece, otherPlayer)) //check that there is a piece of the other color there
+                    Piece piece = squares[row, col];
+                    if ((piece == Piece.EMPTY) || SameColor(piece, otherPlayer)) //check that there is a piece of the other color there
                     {
                         continue;
                     }
                     else
                     {
-                        Location square = new Location(col, row);
+                        Location square = new Location(row, col);
                         List<Board> theseMoves = MovesForThisPiece(square, otherPlayer);
                         AddListToList(theseMoves, allmoves);
                     }
@@ -185,12 +181,12 @@ namespace CheckersGame
             {
                 bool firstCol = false;
                 bool lastCol = false;
-                if (row == 0)
+                if (col == 0)
                 {
                     firstCol = true;
                 }
 
-                if (row == SIZE - 1)
+                if (col == SIZE - 1)
                 {
                     lastCol = true;
                 }
@@ -205,20 +201,6 @@ namespace CheckersGame
                         Location moveto = new Location(col - 1, checkingRow);
                         moves.Add(MakeMoveCopy(location, moveto, playerPiece));
                     }
-                    //else
-                    //{
-                    //    int jumpingRow = above ? row - 2 : row + 2;
-                    //    if ((col - 2 >= 0) && (jumpingRow >= 0) && (jumpingRow < SIZE)) //check for jump
-                    //    {
-                    //        Location middle = new Location(col - 1, checkingRow);
-                    //        Location end = new Location(col - 2, jumpingRow);
-                    //        Board jumpedBoard = MakeJumpCopy(location, middle, end, playerPiece);
-                    //        if (jumpedBoard != null)  
-                    //        {
-                    //            moves.Add(jumpedBoard);
-                    //        }
-                    //    }
-                    //}
                 }
 
                 if (!lastCol) //check right side
@@ -228,22 +210,8 @@ namespace CheckersGame
                         Location moveto = new Location(col + 1, checkingRow);
                         moves.Add(MakeMoveCopy(location, moveto, playerPiece));
                     }
-                    //else
-                    //{
-                    //    int jumpingRow = above ? row - 2 : row + 2;
-                    //    if ((col + 2 < SIZE) && (jumpingRow < SIZE) && (jumpingRow >= 0))
-                    //    {
-                    //        Location middle = new Location(col + 1, checkingRow);
-                    //        Location end = new Location(col + 2, jumpingRow);
-                    //        Board jumpedBoard = MakeJumpCopy(location, middle, end, playerPiece);
-                    //        if (jumpedBoard != null)
-                    //        {
-                    //            moves.Add(jumpedBoard); 
-                    //        }
-                    //    }
-                    //}
                 }
-            }
+        }
 
             return moves;
         }
@@ -544,5 +512,9 @@ namespace CheckersGame
             return king;
         }
 
+        public Piece[,] GetSquares ()
+        {
+            return this.squares; 
+        }
     }
 }
