@@ -106,13 +106,13 @@ namespace CheckersProject
                         buttons[row, col].Tag = emptySquare;
                         buttons[row, col].BackgroundImageLayout = ImageLayout.Stretch;
                     }
-                    else if (squares[row, col] == Piece.GRAY)
+                    else if (squares[row, col] == Piece.WHITE)
                     {
                         buttons[row, col].BackgroundImage = Properties.Resources.checkerGray;
                         buttons[row, col].Tag = graySquare;
                         buttons[row, col].BackgroundImageLayout = ImageLayout.Stretch;
                     } 
-                    else if (squares[row, col] == Piece.WHITE)
+                    else if (squares[row, col] == Piece.GRAY)
                     {
                         buttons[row, col].BackgroundImage = Properties.Resources.checkerWhite;
                         buttons[row, col].Tag = whiteSquare;
@@ -222,7 +222,6 @@ namespace CheckersProject
 
             if (MoveChecker(game.GetCurrentPlayer(), color, game.GetOriginLocation(), game.GetDestinationLocation()))
             {
-                ResetRound();
                 EndOfTurn();
                 if (board.GameOver())
                 {
@@ -241,6 +240,16 @@ namespace CheckersProject
             buttons[destination.row, destination.col].BackgroundImage = color == Piece.GRAY ? Properties.Resources.checkerWhite : Properties.Resources.checkerGray;
             buttons[origin.row, origin.col].Tag = emptySquare;
             buttons[origin.row, origin.col].BackgroundImage = Properties.Resources.checkerNone;
+
+
+            if (origin.row - destination.row == Math.Abs(2) && origin.col - destination.col == Math.Abs(2))
+            { // If jump
+                int rowMiddle = origin.row < destination.row ? origin.row + 1 : origin.row - 1;
+                int colMiddle = origin.col < destination.col ? origin.col + 1 : origin.col - 1;
+
+                buttons[rowMiddle, colMiddle].Tag = emptySquare;
+                buttons[rowMiddle, colMiddle].BackgroundImage = Properties.Resources.checkerNone; 
+            }
 
             board.MakeMove(origin, destination, color);
             game.GetOriginButton().BackColor = Color.Red;
